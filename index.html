@@ -218,7 +218,7 @@ function go(name, btn) {
 
 // ── STORAGE ──
 const BIN_ID  = 'VOTRE_BIN_ID';
-const API_KEY = 'VOTRE_CLE_API';
+const API_KEY = '$2a$10$HyllB/ewHOP785UJvIpKuupPBULyO3W5rNxOZkoivMTM/IOdJs27a';
 const BIN_URL = 'https://api.jsonbin.io/v3/b/' + BIN_ID;
 
 async function dbRead() {
@@ -611,7 +611,7 @@ async function delRecipe(id, e) {
     list = list.filter(function(rec) { return String(rec.id) !== String(id); });
     localStorage.setItem('recipes', JSON.stringify(list));
     // Si JSONBin configuré, sync aussi
-    if (BIN_ID !== 'VOTRE_BIN_ID') {
+    if (BIN_ID !== '6a246236da38895dfe91cd66') {
       await fetch(BIN_URL, {
         method: 'PUT',
         headers: {'Content-Type':'application/json','X-Master-Key':API_KEY},
