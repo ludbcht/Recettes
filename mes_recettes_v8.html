@@ -1,0 +1,2184 @@
+<!DOCTYPE html>
+<html lang="fr">
+<head>
+<meta charset="UTF-8"/>
+<meta name="viewport" content="width=device-width, initial-scale=1.0, viewport-fit=cover"/>
+<meta name="mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-capable" content="yes"/>
+<meta name="apple-mobile-web-app-status-bar-style" content="default"/>
+<meta name="apple-mobile-web-app-title" content="Mes Recettes"/>
+<meta name="theme-color" content="#c2440e"/>
+<title>Mes Recettes</title>
+<link rel="preconnect" href="https://fonts.googleapis.com"/>
+<link rel="preconnect" href="https://fonts.gstatic.com" crossorigin/>
+<link href="https://fonts.googleapis.com/css2?family=DM+Sans:ital,opsz,wght@0,9..40,300;0,9..40,400;0,9..40,500;1,9..40,300&family=Playfair+Display:wght@400;500&display=swap" rel="stylesheet"/>
+<style>
+:root{
+  --cream:#f7f4ef;--white:#fff;--ink:#1c1917;--ink-soft:#57534e;--ink-muted:#a8a29e;
+  --border:rgba(28,25,23,.1);--bh:rgba(28,25,23,.2);
+  --accent:#c2440e;--al:#fdf0eb;--ah:#a33a0b;
+  --green:#166534;--gbg:#f0fdf4;--red:#991b1b;--rbg:#fef2f2;
+  --blue:#1e40af;--bbg:#eff6ff;--purple:#5b21b6;--pbg:#f5f3ff;
+  --r:10px;--rl:16px;
+}
+*{box-sizing:border-box;margin:0;padding:0}
+body{font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--ink);min-height:100vh;-webkit-font-smoothing:antialiased}
+
+/* LOGIN */
+#login{display:flex;align-items:center;justify-content:center;min-height:100vh;padding:1rem}
+.lcard{background:var(--white);padding:2.5rem 2rem;border-radius:var(--rl);border:1px solid var(--border);width:340px;text-align:center}
+.llogo{font-family:'Playfair Display',serif;font-size:1.5rem;color:var(--accent);margin-bottom:1.5rem;letter-spacing:-.5px}
+.llogo span{display:block;font-family:'DM Sans',sans-serif;font-size:.75rem;color:var(--ink-muted);letter-spacing:.5px;text-transform:uppercase;margin-top:.15rem}
+.field{width:100%;padding:.65rem .9rem;border:1px solid var(--border);border-radius:var(--r);font-size:.9rem;font-family:'DM Sans',sans-serif;margin-bottom:.75rem;background:var(--cream);color:var(--ink);transition:border .18s,background .18s}
+.field:focus{outline:none;border-color:var(--accent);background:var(--white)}
+.field::placeholder{color:var(--ink-muted)}
+.btn-primary{width:100%;padding:.7rem;background:var(--ink);color:var(--white);border:none;border-radius:var(--r);font-size:.88rem;font-weight:500;font-family:'DM Sans',sans-serif;cursor:pointer;transition:background .18s}
+.btn-primary:hover{background:#44403c}
+.lerr{color:var(--red);font-size:.8rem;margin-top:.6rem;display:none}
+.lok{color:var(--green);font-size:.8rem;margin-top:.6rem;display:none}
+/* Onglets login/inscription */
+.ltabs{display:flex;gap:0;margin-bottom:1.5rem;border-radius:var(--r);overflow:hidden;border:1px solid var(--border)}
+.ltab{flex:1;padding:.55rem;border:none;background:var(--cream);font-size:.82rem;font-family:'DM Sans',sans-serif;cursor:pointer;color:var(--ink-soft);transition:all .18s}
+.ltab.on{background:var(--ink);color:#fff;font-weight:500}
+.ltab:first-child{border-right:1px solid var(--border)}
+/* Panneau inscription */
+#reg-panel{display:none}
+.lsep{border:none;border-top:1px solid var(--border);margin:1rem 0}
+/* Admin users panel */
+.admin-btn{font-size:.7rem;color:var(--ink-muted);background:none;border:1px solid var(--border);border-radius:6px;padding:.2rem .5rem;cursor:pointer;font-family:'DM Sans',sans-serif;margin-top:.75rem;transition:all .18s}
+.admin-btn:hover{border-color:var(--bh);color:var(--ink)}
+#admin-panel{display:none;position:fixed;inset:0;background:rgba(28,25,23,.55);z-index:500;align-items:center;justify-content:center;padding:1rem}
+#admin-panel.on{display:flex}
+.admin-box{background:var(--white);border-radius:var(--rl);padding:1.5rem;width:100%;max-width:400px;position:relative}
+.admin-box h3{font-family:'Playfair Display',serif;font-size:1rem;font-weight:400;margin-bottom:1rem}
+.admin-close{position:absolute;top:.75rem;right:.75rem;background:none;border:none;font-size:1rem;cursor:pointer;color:var(--ink-muted)}
+.user-row{display:flex;align-items:center;justify-content:space-between;padding:.5rem .6rem;border-radius:8px;font-size:.83rem;background:var(--cream);margin-bottom:.35rem}
+.user-row-name{font-weight:500;color:var(--ink)}
+.user-row-role{font-size:.7rem;color:var(--ink-muted);margin-left:.4rem}
+.user-del-btn{background:none;border:none;color:var(--ink-muted);cursor:pointer;font-size:.8rem;transition:color .18s}
+.user-del-btn:hover{color:var(--red)}
+/* Nom utilisateur dans nav */
+#nav-username{font-size:.78rem;color:var(--ink-muted);margin-right:.25rem}
+
+/* APP */
+#app{display:none;min-height:100vh;flex-direction:column}
+
+/* NAV */
+nav{background:var(--white);border-bottom:1px solid var(--border);padding:.75rem 1.5rem;display:flex;align-items:center;justify-content:space-between;position:sticky;top:0;z-index:50}
+.nav-logo{font-family:'Playfair Display',serif;font-size:1.05rem;color:var(--ink);letter-spacing:-.3px}
+.nav-logo em{color:var(--accent);font-style:normal}
+.nav-tabs{display:flex;gap:.3rem;flex-wrap:wrap}
+.tab{background:none;border:1px solid transparent;padding:.35rem .85rem;border-radius:20px;font-size:.8rem;font-family:'DM Sans',sans-serif;cursor:pointer;color:var(--ink-soft);transition:all .18s}
+.tab.on{background:var(--ink);color:var(--white);border-color:var(--ink)}
+.tab:hover:not(.on){border-color:var(--bh);color:var(--ink)}
+.btn-logout{background:none;border:none;font-size:.75rem;color:var(--ink-muted);cursor:pointer;font-family:'DM Sans',sans-serif;transition:color .18s}
+.btn-logout:hover{color:var(--ink)}
+
+/* MAIN */
+main{flex:1;padding:1.75rem 1.5rem;max-width:1040px;margin:0 auto;width:100%}
+.page{display:none}.page.on{display:block}
+
+/* ── FORMULAIRE NOUVELLE RECETTE ── */
+.form-card{background:var(--white);border-radius:var(--rl);padding:1.75rem 2rem;border:1px solid var(--border)}
+.form-card h3{font-family:'Playfair Display',serif;font-size:1.1rem;font-weight:400;margin-bottom:1.5rem;color:var(--ink)}
+.form-row{margin-bottom:1rem}
+.form-row label{display:block;font-size:.72rem;font-weight:500;text-transform:uppercase;letter-spacing:.6px;color:var(--ink-muted);margin-bottom:.35rem}
+.finput{width:100%;padding:.6rem .85rem;border:1px solid var(--border);border-radius:var(--r);font-size:.875rem;font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--ink);transition:border .18s,background .18s}
+.finput:focus{outline:none;border-color:var(--accent);background:var(--white)}
+.finput::placeholder{color:var(--ink-muted)}
+.form-row2{display:grid;grid-template-columns:1fr 1fr 1fr;gap:.75rem;margin-bottom:1rem}
+.form-row3{display:grid;grid-template-columns:1fr 1fr;gap:.75rem;margin-bottom:1rem}
+/* Ingrédients dynamiques */
+.ing-builder{border:1px solid var(--border);border-radius:var(--r);overflow:hidden;margin-bottom:.5rem}
+.ing-builder-head{background:var(--cream);padding:.4rem .75rem;font-size:.72rem;font-weight:500;text-transform:uppercase;letter-spacing:.6px;color:var(--ink-muted);display:flex;justify-content:space-between;align-items:center}
+.ing-rows{padding:.5rem .75rem;display:flex;flex-direction:column;gap:.4rem}
+.ing-row-form{display:flex;gap:.4rem;align-items:center}
+.ing-row-form input{padding:.4rem .6rem;border:1px solid var(--border);border-radius:7px;font-size:.82rem;font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--ink);transition:border .18s}
+.ing-row-form input:focus{outline:none;border-color:var(--accent);background:var(--white)}
+.ing-row-form input::placeholder{color:var(--ink-muted)}
+.ing-qty{width:58px;flex-shrink:0}
+.ing-unit-wrap{position:relative;flex-shrink:0;width:94px}
+.ing-unit-sel{width:100%;padding:.35rem .28rem;border:1px solid var(--border);border-radius:8px;font-size:.82rem;font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--ink);cursor:pointer;appearance:none;-webkit-appearance:none;transition:border .18s}
+.ing-unit-sel:focus{outline:none;border-color:var(--accent);background:var(--white)}
+.ing-unit-caret{position:absolute;right:.38rem;top:50%;transform:translateY(-50%);pointer-events:none;font-size:.65rem;color:var(--ink-muted)}
+.ing-unit-custom{width:100%;padding:.32rem .4rem;border:1px solid var(--accent);border-radius:8px;font-size:.82rem;font-family:'DM Sans',sans-serif;background:var(--white);color:var(--ink);margin-top:.22rem;display:none}
+.ing-unit-custom:focus{outline:none}
+.ing-name{flex:1}
+.btn-ing-del{background:none;border:none;color:var(--ink-muted);cursor:pointer;font-size:.9rem;padding:0 .2rem;line-height:1;transition:color .18s;flex-shrink:0}
+.btn-ing-del:hover{color:var(--red)}
+.btn-add-row{background:none;border:1px dashed var(--bh);border-radius:7px;padding:.35rem .75rem;font-size:.78rem;font-family:'DM Sans',sans-serif;color:var(--ink-muted);cursor:pointer;transition:all .18s;width:100%;margin-top:.25rem}
+.btn-add-row:hover{border-color:var(--accent);color:var(--accent);background:var(--al)}
+/* Étapes */
+.step-rows{display:flex;flex-direction:column;gap:.4rem;margin-bottom:.5rem}
+.step-row{display:flex;gap:.5rem;align-items:flex-start}
+.step-num{font-size:.72rem;font-weight:500;color:var(--ink-muted);padding-top:.5rem;flex-shrink:0;width:16px;text-align:right}
+.step-row textarea{flex:1;padding:.4rem .65rem;border:1px solid var(--border);border-radius:7px;font-size:.83rem;font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--ink);resize:vertical;min-height:52px;transition:border .18s}
+.step-row textarea:focus{outline:none;border-color:var(--accent);background:var(--white)}
+.step-row textarea::placeholder{color:var(--ink-muted)}
+/* Image preview */
+.img-pick-zone{border:1.5px dashed var(--bh);border-radius:var(--r);height:120px;display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.4rem;cursor:pointer;transition:all .2s;overflow:hidden;position:relative}
+.img-pick-zone:hover{border-color:var(--accent);background:var(--al)}
+.img-pick-zone .ph{font-size:1.6rem;color:var(--ink-muted)}
+.img-pick-zone .ph-txt{font-size:.75rem;color:var(--ink-muted)}
+.img-pick-zone img{width:100%;height:100%;object-fit:cover;position:absolute;inset:0}
+.img-pick-zone .change-lbl{position:absolute;bottom:0;left:0;right:0;background:rgba(28,25,23,.5);color:#fff;font-size:.7rem;text-align:center;padding:.2rem;opacity:0;transition:opacity .18s}
+.img-pick-zone:hover .change-lbl{opacity:1}
+/* Boutons form */
+.form-actions{display:flex;gap:.65rem;margin-top:1.5rem}
+.btn-save{padding:.65rem 1.4rem;background:var(--accent);color:var(--white);border:none;border-radius:var(--r);font-size:.875rem;font-weight:500;font-family:'DM Sans',sans-serif;cursor:pointer;transition:background .18s}
+.btn-save:hover{background:var(--ah)}
+.btn-cancel{padding:.65rem 1rem;background:none;border:1px solid var(--border);border-radius:var(--r);font-size:.875rem;font-family:'DM Sans',sans-serif;cursor:pointer;color:var(--ink-soft);transition:all .18s}
+.btn-cancel:hover{border-color:var(--bh);color:var(--ink)}
+
+/* IMPORT URL */
+.import-card{background:var(--white);border-radius:var(--rl);padding:1.5rem 2rem;border:1px solid var(--border);margin-bottom:1.5rem}
+.import-card h4{font-family:'Playfair Display',serif;font-size:.95rem;font-weight:400;margin-bottom:.3rem;color:var(--ink)}
+.import-card .sub{font-size:.78rem;color:var(--ink-muted);margin-bottom:.85rem}
+.url-row{display:flex;gap:.5rem}
+.url-row input{flex:1;padding:.58rem .85rem;border:1px solid var(--border);border-radius:var(--r);font-size:.85rem;font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--ink);transition:border .18s}
+.url-row input:focus{outline:none;border-color:var(--accent);background:var(--white)}
+.url-row input::placeholder{color:var(--ink-muted)}
+.url-row button{padding:.58rem 1.1rem;background:var(--accent);color:var(--white);border:none;border-radius:var(--r);font-size:.83rem;font-family:'DM Sans',sans-serif;font-weight:500;cursor:pointer;white-space:nowrap;transition:background .18s}
+.url-row button:hover{background:var(--ah)}
+.import-status{margin-top:.7rem;font-size:.8rem;padding:.45rem .8rem;border-radius:7px;display:none}
+.is-ok{background:var(--gbg);color:var(--green);display:block}
+.is-err{background:var(--rbg);color:var(--red);display:block}
+.is-load{background:var(--bbg);color:var(--blue);display:block}
+
+/* PHOTOS PAR ÉTAPE */
+.step-row{align-items:flex-start}
+.step-media{display:flex;flex-direction:column;gap:.3rem;flex-shrink:0;width:72px}
+.step-img-thumb{width:72px;height:54px;border-radius:6px;object-fit:cover;border:1px solid var(--border);display:block}
+.step-img-ph{width:72px;height:54px;border-radius:6px;border:1.5px dashed var(--bh);display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;font-size:1rem;color:var(--ink-muted);transition:all .18s;gap:.1rem}
+.step-img-ph:hover{border-color:var(--accent);color:var(--accent);background:var(--al)}
+.step-img-ph-label{font-size:.55rem;text-align:center;line-height:1.2}
+.step-img-del{font-size:.65rem;color:var(--ink-muted);background:none;border:none;cursor:pointer;text-align:center;font-family:'DM Sans',sans-serif;transition:color .18s;padding:0}
+.step-img-del:hover{color:var(--red)}
+/* URL étape */
+.step-url-row{display:flex;gap:.3rem;margin-top:.25rem;align-items:center}
+.step-url-inp{flex:1;padding:.3rem .5rem;border:1px solid var(--border);border-radius:6px;font-size:.72rem;font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--ink);transition:border .18s}
+.step-url-inp:focus{outline:none;border-color:var(--accent);background:var(--white)}
+.step-url-inp::placeholder{color:var(--ink-muted)}
+.step-url-btn{padding:.28rem .5rem;background:var(--accent);color:#fff;border:none;border-radius:6px;font-size:.7rem;cursor:pointer;white-space:nowrap;font-family:'DM Sans',sans-serif;transition:background .18s;flex-shrink:0}
+.step-url-btn:hover{background:var(--ah)}
+.step-url-err{font-size:.65rem;color:var(--red);margin-top:.15rem;display:none}
+/* Étape dans la modal */
+.mbox ol{list-style:none;padding:0}
+.m-step{display:flex;gap:.85rem;align-items:flex-start;padding:.6rem 0;border-bottom:1px solid var(--border)}
+.m-step:last-child{border-bottom:none}
+.m-step-num{font-size:.7rem;font-weight:500;color:var(--ink-muted);flex-shrink:0;width:18px;padding-top:.15rem}
+.m-step-body{flex:1}
+.m-step-txt{font-size:.875rem;line-height:1.55;color:var(--ink)}
+.m-step-img{width:100%;max-height:200px;object-fit:cover;border-radius:8px;margin-top:.5rem;display:block}
+
+/* RECETTES */
+.recipes-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:1.25rem}
+.section-title{font-family:'Playfair Display',serif;font-size:1.1rem;font-weight:400;color:var(--ink)}
+.btn-del-all{font-size:.75rem;padding:.25rem .7rem;border-radius:6px;border:1px solid var(--border);cursor:pointer;background:var(--white);color:var(--ink-muted);font-family:'DM Sans',sans-serif;transition:all .18s}
+.btn-del-all:hover{border-color:var(--red);color:var(--red);background:var(--rbg)}
+
+/* GRID */
+.grid{display:grid;grid-template-columns:repeat(auto-fill,minmax(240px,1fr));gap:1rem}
+.card{background:var(--white);border-radius:var(--rl);overflow:hidden;border:1px solid var(--border);cursor:pointer;transition:transform .18s,border-color .18s,box-shadow .18s}
+.card:hover{transform:translateY(-2px);border-color:var(--bh);box-shadow:0 8px 24px rgba(28,25,23,.07)}
+.card-img{width:100%;height:158px;object-fit:cover}
+.card-body{padding:.9rem 1rem 1rem}
+.card-body h4{font-size:.88rem;font-weight:500;margin-bottom:.3rem;line-height:1.35;color:var(--ink)}
+.card-meta{font-size:.73rem;color:var(--ink-muted);margin-bottom:.7rem;display:flex;align-items:center;gap:.3rem;flex-wrap:wrap}
+.card-cal{font-size:.72rem;color:var(--accent);font-weight:500;background:var(--al);padding:.1rem .45rem;border-radius:4px}
+.card-actions{display:flex;gap:.4rem;flex-wrap:wrap}
+.btn-courses{font-size:.73rem;padding:.3rem .65rem;border-radius:6px;border:none;cursor:pointer;background:var(--ink);color:var(--white);font-family:'DM Sans',sans-serif;transition:background .18s}
+.btn-courses:hover{background:#44403c}
+.btn-plan{font-size:.73rem;padding:.3rem .65rem;border-radius:6px;border:1px solid var(--border);cursor:pointer;background:var(--white);color:var(--purple);font-family:'DM Sans',sans-serif;transition:all .18s}
+.btn-plan:hover{border-color:var(--purple);background:var(--pbg)}
+.btn-edit{font-size:.73rem;padding:.3rem .65rem;border-radius:6px;border:1px solid var(--border);cursor:pointer;background:var(--white);color:var(--ink-soft);font-family:'DM Sans',sans-serif;transition:all .18s}
+.btn-edit:hover{border-color:var(--bh);color:var(--ink)}
+.btn-del{font-size:.73rem;padding:.3rem .65rem;border-radius:6px;border:1px solid var(--border);cursor:pointer;background:var(--white);color:var(--ink-muted);font-family:'DM Sans',sans-serif;transition:all .18s}
+.btn-del:hover{border-color:var(--red);color:var(--red);background:var(--rbg)}
+.card-ph{width:100%;height:158px;background:var(--cream);display:flex;align-items:center;justify-content:center;font-size:2.5rem;color:var(--ink-muted)}
+.empty{text-align:center;color:var(--ink-muted);padding:4rem 0;font-size:.9rem}
+.empty a{color:var(--accent);cursor:pointer;text-decoration:underline}
+
+/* MODAL RECETTE */
+#modal{display:none;position:fixed;inset:0;background:rgba(28,25,23,.5);z-index:200;align-items:center;justify-content:center;padding:1rem}
+#modal.on{display:flex}
+.mbox{background:var(--white);border-radius:var(--rl);max-width:660px;width:100%;max-height:90vh;overflow-y:auto;position:relative;border:1px solid var(--border)}
+.mclose{position:absolute;top:.9rem;right:.9rem;background:rgba(255,255,255,.9);border:1px solid var(--border);font-size:.85rem;cursor:pointer;width:30px;height:30px;border-radius:50%;display:flex;align-items:center;justify-content:center;color:var(--ink-soft);z-index:2;transition:all .18s}
+.mclose:hover{background:var(--white);border-color:var(--bh)}
+.mimg-wrap{position:relative}
+.mimg-wrap img{width:100%;max-height:280px;object-fit:cover;display:block;border-radius:var(--rl) var(--rl) 0 0}
+.mcontent{padding:1.5rem 1.75rem 1.75rem}
+.mbox h2{font-family:'Playfair Display',serif;font-size:1.35rem;font-weight:400;margin-bottom:.4rem;line-height:1.3;color:var(--ink)}
+.mmeta{font-size:.78rem;color:var(--ink-muted);margin-bottom:.75rem;display:flex;align-items:center;flex-wrap:wrap;gap:.3rem}
+.mmeta .sep{color:var(--bh)}
+.mcal{display:inline-flex;align-items:center;font-size:.75rem;color:var(--accent);background:var(--al);padding:.2rem .55rem;border-radius:5px;font-weight:500;margin-bottom:1rem}
+.sec-title{font-size:.7rem;font-weight:500;text-transform:uppercase;letter-spacing:.8px;color:var(--ink-muted);margin:1.25rem 0 .65rem;display:flex;justify-content:space-between;align-items:center}
+.mbox ul,.mbox ol{padding-left:1.1rem}
+.mbox li{font-size:.875rem;margin-bottom:.4rem;line-height:1.55;color:var(--ink)}
+.mdesc{font-size:.865rem;color:var(--ink-soft);margin-bottom:.5rem;line-height:1.55;font-style:italic}
+.m-plan-btn{display:inline-flex;align-items:center;gap:.4rem;font-size:.78rem;padding:.3rem .75rem;border-radius:6px;border:1px solid var(--border);cursor:pointer;background:var(--white);color:var(--purple);font-family:'DM Sans',sans-serif;margin-bottom:.5rem;transition:all .18s}
+.m-plan-btn:hover{border-color:var(--purple);background:var(--pbg)}
+
+/* INGRÉDIENTS MODAL */
+.ing-list{list-style:none;padding:0}
+.ing-item{display:flex;align-items:center;justify-content:space-between;padding:.4rem 0;border-bottom:1px solid var(--border);gap:.5rem}
+.ing-item:last-child{border-bottom:none}
+.ing-item-left{display:flex;align-items:center;gap:.55rem;flex:1;min-width:0}
+.ing-icon{width:26px;height:26px;flex-shrink:0;opacity:.45}
+.ing-item span{font-size:.86rem;flex:1;min-width:0;overflow:hidden;text-overflow:ellipsis;white-space:nowrap;color:var(--ink)}
+.btn-add-ing{font-size:.7rem;padding:.2rem .55rem;border-radius:5px;border:none;cursor:pointer;background:var(--al);color:var(--accent);white-space:nowrap;flex-shrink:0;font-family:'DM Sans',sans-serif;transition:all .18s}
+.btn-add-ing:hover{background:var(--accent);color:var(--white)}
+.btn-add-ing.added{background:var(--gbg);color:var(--green);cursor:default}
+.btn-add-all{font-size:.7rem;padding:.2rem .65rem;border-radius:5px;border:none;cursor:pointer;background:var(--ink);color:var(--white);font-family:'DM Sans',sans-serif;transition:background .18s}
+.btn-add-all:hover{background:#44403c}
+
+/* COURSES */
+.shop-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:1rem}
+.shop-header h3{font-family:'Playfair Display',serif;font-size:1.1rem;font-weight:400;color:var(--ink)}
+.shop-actions{display:flex;gap:.4rem}
+.btn-print,.btn-wipe{font-size:.78rem;padding:.3rem .75rem;border-radius:6px;border:1px solid var(--border);cursor:pointer;background:var(--white);font-family:'DM Sans',sans-serif;transition:all .18s}
+.btn-print{color:var(--ink-soft)}.btn-print:hover{border-color:var(--blue);color:var(--blue)}
+.btn-wipe{color:var(--ink-muted)}.btn-wipe:hover{border-color:var(--red);color:var(--red);background:var(--rbg)}
+.shop-add-row{display:flex;gap:.5rem;margin-bottom:1rem}
+.shop-add-row input{flex:1;padding:.55rem .85rem;border:1px solid var(--border);border-radius:var(--r);font-size:.85rem;font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--ink);transition:border .18s}
+.shop-add-row input:focus{outline:none;border-color:var(--accent);background:var(--white)}
+.shop-add-row input::placeholder{color:var(--ink-muted)}
+.shop-add-row button{padding:.55rem .9rem;background:var(--accent);color:var(--white);border:none;border-radius:var(--r);font-size:.85rem;font-family:'DM Sans',sans-serif;cursor:pointer;transition:background .18s}
+.shop-add-row button:hover{background:var(--ah)}
+#shop-list{background:var(--white);border-radius:var(--rl);padding:1rem 1.25rem;border:1px solid var(--border)}
+.s-item{display:flex;align-items:center;gap:.6rem;padding:.55rem 0;border-bottom:1px solid var(--border)}
+.s-item:last-child{border-bottom:none}
+.s-item input[type=checkbox]{accent-color:var(--accent);width:15px;height:15px;flex-shrink:0;cursor:pointer}
+.s-item.done .ing-label{text-decoration:line-through;color:var(--ink-muted)}
+.ing-label{font-size:.86rem;flex:1;cursor:pointer;color:var(--ink)}
+.qty-wrap{display:flex;align-items:center;gap:.3rem;flex-shrink:0}
+.qty-input{width:50px;padding:.2rem .4rem;border:1px solid var(--border);border-radius:6px;font-size:.8rem;text-align:center;background:var(--cream);font-family:'DM Sans',sans-serif;color:var(--ink)}
+.qty-input:focus{outline:none;border-color:var(--accent);background:var(--white)}
+.qty-unit{font-size:.76rem;color:var(--ink-muted);min-width:26px}
+.s-item-del{background:none;border:none;color:var(--bh);cursor:pointer;font-size:.85rem;padding:0 .1rem;flex-shrink:0;transition:color .18s}
+.s-item-del:hover{color:var(--red)}
+
+/* PLANNING */
+.planning-header{display:flex;justify-content:space-between;align-items:center;margin-bottom:1.25rem;flex-wrap:wrap;gap:.5rem}
+.btn-generate{background:var(--ink);color:var(--white);border:none;border-radius:20px;padding:.38rem .95rem;font-size:.8rem;font-family:'DM Sans',sans-serif;cursor:pointer;display:flex;align-items:center;gap:.35rem;transition:background .18s;font-weight:500}
+.btn-generate:hover{background:#44403c}
+/* MODALE GÉNÉRATION */
+#gen-modal{display:none;position:fixed;inset:0;background:rgba(28,25,23,.55);z-index:400;align-items:center;justify-content:center;padding:1rem}
+#gen-modal.on{display:flex}
+.gen-box{background:var(--white);border-radius:var(--rl);padding:1.75rem;width:100%;max-width:480px;max-height:90vh;overflow-y:auto;position:relative}
+.gen-box h3{font-family:'Playfair Display',serif;font-size:1.1rem;font-weight:400;margin-bottom:.3rem}
+.gen-subtitle{font-size:.78rem;color:var(--ink-muted);margin-bottom:1.25rem}
+.gen-close{position:absolute;top:.85rem;right:.85rem;background:none;border:none;font-size:1.1rem;cursor:pointer;color:var(--ink-muted);transition:color .18s}
+.gen-close:hover{color:var(--ink)}
+.gen-section{margin-bottom:1.1rem}
+.gen-section-title{font-size:.78rem;font-weight:500;text-transform:uppercase;letter-spacing:.5px;color:var(--ink-muted);margin-bottom:.55rem}
+.gen-chips{display:flex;flex-wrap:wrap;gap:.4rem}
+.gen-chip{border:1.5px solid var(--border);border-radius:20px;padding:.3rem .75rem;font-size:.78rem;font-family:'DM Sans',sans-serif;cursor:pointer;color:var(--ink-soft);transition:all .18s;background:var(--cream)}
+.gen-chip:hover{border-color:var(--bh);color:var(--ink)}
+.gen-chip.on{background:var(--ink);color:var(--white);border-color:var(--ink)}
+.gen-chip.accent.on{background:var(--accent);border-color:var(--accent);color:#fff}
+.gen-note{width:100%;padding:.55rem .8rem;border:1px solid var(--border);border-radius:var(--r);font-size:.83rem;font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--ink);resize:none;transition:border .18s;margin-top:.5rem}
+.gen-note:focus{outline:none;border-color:var(--accent);background:var(--white)}
+.gen-note::placeholder{color:var(--ink-muted)}
+.gen-footer{display:flex;justify-content:flex-end;gap:.6rem;margin-top:1.4rem}
+.btn-gen-cancel{background:none;border:1px solid var(--border);border-radius:var(--r);padding:.55rem 1.1rem;font-size:.83rem;font-family:'DM Sans',sans-serif;cursor:pointer;color:var(--ink-soft);transition:all .18s}
+.btn-gen-cancel:hover{border-color:var(--bh);color:var(--ink)}
+.btn-gen-go{background:var(--accent);color:#fff;border:none;border-radius:var(--r);padding:.55rem 1.3rem;font-size:.83rem;font-family:'DM Sans',sans-serif;cursor:pointer;font-weight:500;transition:background .18s;display:flex;align-items:center;gap:.4rem}
+.btn-gen-go:hover:not(:disabled){background:var(--ah)}
+.btn-gen-go:disabled{opacity:.5;cursor:not-allowed}
+.gen-status{font-size:.8rem;color:var(--ink-muted);text-align:center;padding:.5rem 0;display:none}
+.gen-preview{margin-top:1.1rem;display:none}
+.gen-preview-title{font-size:.8rem;font-weight:500;color:var(--ink-soft);margin-bottom:.5rem;text-transform:uppercase;letter-spacing:.4px}
+.gen-day-row{display:flex;align-items:center;gap:.6rem;padding:.45rem .65rem;border-radius:8px;font-size:.82rem;background:var(--cream);margin-bottom:.3rem}
+.gen-day-label{width:62px;font-size:.75rem;color:var(--ink-muted);flex-shrink:0;font-weight:500}
+.gen-day-recipe{flex:1;color:var(--ink)}
+.gen-day-empty{flex:1;color:var(--ink-muted);font-style:italic}
+.gen-confirm-row{display:flex;justify-content:flex-end;gap:.5rem;margin-top:1rem}
+.btn-gen-confirm{background:var(--green);color:#fff;border:none;border-radius:var(--r);padding:.5rem 1.2rem;font-size:.82rem;font-family:'DM Sans',sans-serif;cursor:pointer;font-weight:500;transition:background .18s}
+.btn-gen-confirm:hover{background:#14532d}
+.btn-gen-retry{background:none;border:1px solid var(--border);border-radius:var(--r);padding:.5rem 1rem;font-size:.82rem;font-family:'DM Sans',sans-serif;cursor:pointer;color:var(--ink-soft);transition:all .18s}
+.btn-gen-retry:hover{border-color:var(--bh);color:var(--ink)}
+.plan-nav{display:flex;align-items:center;gap:.75rem}
+.plan-nav button{background:none;border:1px solid var(--border);border-radius:6px;width:28px;height:28px;cursor:pointer;font-size:.85rem;color:var(--ink-soft);display:flex;align-items:center;justify-content:center;transition:all .18s}
+.plan-nav button:hover{border-color:var(--bh);color:var(--ink)}
+.plan-week-label{font-size:.82rem;color:var(--ink-soft);min-width:150px;text-align:center}
+.plan-grid{display:grid;grid-template-columns:repeat(7,1fr);gap:.5rem}
+.plan-day{background:var(--white);border-radius:var(--r);border:1px solid var(--border);overflow:hidden;min-height:130px}
+.plan-day-head{padding:.4rem .5rem;border-bottom:1px solid var(--border);background:var(--cream)}
+.plan-day-name{font-size:.65rem;font-weight:500;text-transform:uppercase;letter-spacing:.5px;color:var(--ink-muted)}
+.plan-day-num{font-size:.95rem;font-weight:500;color:var(--ink);line-height:1.1}
+.plan-day-num.today{color:var(--accent)}
+.plan-day-body{padding:.3rem .35rem;display:flex;flex-direction:column;gap:.25rem}
+.plan-slot{background:var(--pbg);border:1px solid rgba(91,33,182,.15);border-radius:6px;padding:.28rem .35rem;cursor:pointer;transition:all .18s;position:relative}
+.plan-slot:hover{background:#ede9fe}
+.plan-slot-name{font-size:.68rem;font-weight:500;color:var(--purple);line-height:1.25;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;display:block;padding-right:13px}
+.plan-slot-cal{font-size:.6rem;color:var(--purple);opacity:.7}
+.plan-slot-del{position:absolute;top:.2rem;right:.25rem;background:none;border:none;color:rgba(91,33,182,.35);cursor:pointer;font-size:.66rem;padding:0;line-height:1;transition:color .18s}
+.plan-slot-del:hover{color:var(--red)}
+.plan-add-btn{background:none;border:1px dashed var(--bh);border-radius:6px;width:100%;padding:.22rem;font-size:.68rem;color:var(--ink-muted);cursor:pointer;font-family:'DM Sans',sans-serif;transition:all .18s;margin-top:.1rem}
+.plan-add-btn:hover{border-color:var(--purple);color:var(--purple);background:var(--pbg)}
+
+/* MODAL PLANNING */
+#plan-modal{display:none;position:fixed;inset:0;background:rgba(28,25,23,.5);z-index:300;align-items:center;justify-content:center;padding:1rem}
+#plan-modal.on{display:flex}
+.pmbox{background:var(--white);border-radius:var(--rl);width:100%;max-width:400px;padding:1.5rem;border:1px solid var(--border)}
+.pmbox h3{font-family:'Playfair Display',serif;font-size:1rem;font-weight:400;margin-bottom:.25rem;color:var(--ink)}
+.pm-sub{font-size:.78rem;color:var(--ink-muted);margin-bottom:1rem}
+.pm-search{width:100%;padding:.55rem .85rem;border:1px solid var(--border);border-radius:var(--r);font-size:.85rem;font-family:'DM Sans',sans-serif;background:var(--cream);color:var(--ink);margin-bottom:.75rem;transition:border .18s}
+.pm-search:focus{outline:none;border-color:var(--purple);background:var(--white)}
+.pm-search::placeholder{color:var(--ink-muted)}
+.pm-list{max-height:270px;overflow-y:auto;display:flex;flex-direction:column;gap:.3rem}
+.pm-item{display:flex;align-items:center;gap:.6rem;padding:.45rem .55rem;border-radius:8px;cursor:pointer;border:1px solid transparent;transition:all .15s}
+.pm-item:hover{background:var(--pbg);border-color:rgba(91,33,182,.15)}
+.pm-thumb{width:34px;height:34px;border-radius:6px;object-fit:cover;flex-shrink:0;background:var(--cream)}
+.pm-thumb-ph{width:34px;height:34px;border-radius:6px;flex-shrink:0;background:var(--cream);display:flex;align-items:center;justify-content:center;font-size:.95rem}
+.pm-name{font-size:.83rem;color:var(--ink);flex:1;line-height:1.3}
+.pm-cal{font-size:.71rem;color:var(--ink-muted)}
+.pm-close{float:right;background:none;border:none;font-size:.9rem;cursor:pointer;color:var(--ink-muted);transition:color .18s}
+.pm-close:hover{color:var(--ink)}
+
+/* UPLOAD */
+.img-upload-zone{width:100%;height:158px;background:var(--cream);display:flex;flex-direction:column;align-items:center;justify-content:center;gap:.4rem;cursor:pointer;border:1.5px dashed var(--bh);transition:all .2s}
+.img-upload-zone:hover{border-color:var(--accent);background:var(--al)}
+.img-upload-zone span{font-size:.73rem;color:var(--ink-muted)}
+
+
+/* ════════════════════════════════
+   BOTTOM TAB BAR (mobile)
+   ════════════════════════════════ */
+#bottom-nav{
+  display:none;
+  position:fixed;bottom:0;left:0;right:0;
+  background:var(--white);
+  border-top:1px solid var(--border);
+  z-index:100;
+  padding-bottom:env(safe-area-inset-bottom);
+}
+.bottom-tabs{display:flex;align-items:stretch}
+.btab{
+  flex:1;display:flex;flex-direction:column;align-items:center;
+  justify-content:center;gap:.18rem;padding:.55rem .25rem .45rem;
+  border:none;background:none;cursor:pointer;
+  font-size:.6rem;font-family:'DM Sans',sans-serif;
+  color:var(--ink-muted);transition:color .15s;
+  -webkit-tap-highlight-color:transparent;
+}
+.btab svg{width:22px;height:22px;stroke:currentColor;fill:none;stroke-width:1.6;stroke-linecap:round;stroke-linejoin:round}
+.btab.on{color:var(--accent)}
+.btab.on svg{stroke:var(--accent)}
+/* nav top user row (mobile) */
+.nav-user-row{display:none}
+
+/* ════════════════════════════════
+   TABLET 700px
+   ════════════════════════════════ */
+@media(max-width:700px){
+  .plan-grid{grid-template-columns:repeat(7,minmax(86px,1fr));overflow-x:auto}
+  #p-planning{overflow-x:auto}
+  .form-row2{grid-template-columns:1fr 1fr}
+  .form-row3{grid-template-columns:1fr}
+}
+
+/* ════════════════════════════════
+   MOBILE 540px
+   ════════════════════════════════ */
+@media(max-width:540px){
+  /* NAV TOP → cachée, remplacée par bottom bar */
+  nav{ padding:.6rem 1rem; display:none }
+  #bottom-nav{ display:block }
+  /* Nom + déconnexion en haut de chaque page */
+  .nav-user-row{
+    display:flex;align-items:center;justify-content:space-between;
+    padding:.6rem 1rem .2rem;
+    background:var(--white);
+    border-bottom:1px solid var(--border);
+    position:sticky;top:0;z-index:40;
+  }
+  .nav-user-row-left{ display:flex;align-items:center;gap:.5rem }
+  .nav-user-logo{ font-family:'Playfair Display',serif;font-size:.95rem;color:var(--ink) }
+  .nav-user-logo em{ color:var(--accent);font-style:normal }
+  .nav-user-name{ font-size:.75rem;color:var(--ink-muted) }
+  .nav-user-row-right{ display:flex;align-items:center;gap:.6rem }
+  #nav-sync-dot-m{ font-size:.7rem;color:var(--ink-muted);transition:color .3s }
+
+  /* Main + bottom padding for tabbar */
+  main{ padding:.9rem .85rem 5rem; }
+
+  /* Login card */
+  .lcard{ width:100%;max-width:360px;padding:2rem 1.25rem }
+
+  /* Form */
+  .form-card{ padding:1.1rem 1rem }
+  .form-row2{ grid-template-columns:1fr 1fr }
+  .form-row3{ grid-template-columns:1fr }
+  .finput{ font-size:1rem;padding:.65rem .85rem } /* prevent iOS zoom */
+  .ing-unit-sel{ font-size:1rem }
+  .ing-unit-custom{ font-size:1rem }
+  .ing-qty{ width:54px }
+  .ing-unit-wrap{ width:88px }
+  .btn-save-recipe{ width:100%;padding:.8rem }
+
+  /* Grille recettes */
+  .grid{ grid-template-columns:1fr 1fr;gap:.65rem }
+  .card{ border-radius:10px }
+  .card-img{ height:100px }
+
+  /* Modal recette */
+  .mbox{ max-height:92vh;border-radius:var(--rl) var(--rl) 0 0;position:fixed;bottom:0;left:0;right:0;width:100%;max-width:100%;margin:0;overflow-y:auto }
+  #modal{ align-items:flex-end }
+
+  /* Planning */
+  .planning-header{ flex-direction:column;align-items:flex-start;gap:.65rem }
+  .plan-grid{ grid-template-columns:1fr;overflow-x:unset }
+  .plan-day{ border-radius:10px;background:var(--white);border:1px solid var(--border);padding:.65rem .75rem }
+  .plan-day-head{ display:flex;align-items:center;gap:.5rem;margin-bottom:.4rem }
+  .plan-day-name{ font-size:.78rem;font-weight:500;color:var(--ink-muted);min-width:36px }
+  .plan-day-num{ font-size:.88rem;font-weight:500 }
+  .plan-day-num.today{ color:var(--accent) }
+  .plan-day-body{ display:flex;flex-wrap:wrap;gap:.3rem;align-items:center }
+  .plan-slot{ font-size:.78rem;padding:.28rem .55rem }
+  .plan-add-btn{ font-size:.75rem;padding:.28rem .6rem }
+  .btn-generate{ font-size:.75rem;padding:.35rem .8rem }
+
+  /* Gen modal */
+  .gen-box{ border-radius:var(--rl) var(--rl) 0 0;position:fixed;bottom:0;left:0;right:0;width:100%;max-width:100%;max-height:88vh;padding:1.25rem 1rem }
+  #gen-modal{ align-items:flex-end }
+
+  /* Plan modal */
+  .pmbox{ border-radius:var(--rl) var(--rl) 0 0;position:fixed;bottom:0;left:0;right:0;width:100%;max-width:100% }
+  #plan-modal{ align-items:flex-end }
+
+  /* Admin modal */
+  .admin-box{ border-radius:var(--rl) var(--rl) 0 0;position:fixed;bottom:0;left:0;right:0;width:100%;max-width:100% }
+  #admin-panel{ align-items:flex-end }
+
+  /* Courses */
+  .shop-header{ flex-direction:column;align-items:flex-start;gap:.5rem }
+  .shop-actions{ display:flex;gap:.5rem }
+
+  /* Steps */
+  .step-row{ flex-wrap:wrap }
+
+  /* Import URL */
+  .import-card{ padding:1rem }
+
+  /* Chips gen modal */
+  .gen-chip{ font-size:.75rem;padding:.28rem .65rem }
+
+  /* Inputs font-size 16px everywhere to prevent iOS zoom */
+  input, textarea, select{ font-size:1rem !important }
+}
+</style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div id="login">
+  <div class="lcard">
+    <div class="llogo">Mes Recettes <span>carnet personnel</span></div>
+
+    <!-- Onglets -->
+    <div class="ltabs">
+      <button class="ltab on" id="tab-login" onclick="showLoginTab('login')">Connexion</button>
+      <button class="ltab" id="tab-reg" onclick="showLoginTab('reg')">Inscription</button>
+    </div>
+
+    <!-- Connexion -->
+    <div id="login-panel">
+      <input class="field" type="text" id="u" placeholder="Pseudo" autocomplete="username"/>
+      <input class="field" type="password" id="p" placeholder="Mot de passe" autocomplete="current-password"/>
+      <button class="btn-primary" id="btn-login">Se connecter</button>
+      <div class="lerr" id="lerr">Pseudo ou mot de passe incorrect.</div>
+    </div>
+
+    <!-- Inscription -->
+    <div id="reg-panel">
+      <input class="field" type="text" id="ru" placeholder="Choisir un pseudo" autocomplete="off" maxlength="30"/>
+      <input class="field" type="password" id="rp" placeholder="Choisir un mot de passe" autocomplete="new-password"/>
+      <input class="field" type="password" id="rp2" placeholder="Confirmer le mot de passe" autocomplete="new-password"/>
+      <button class="btn-primary" id="btn-reg" onclick="doRegister()">Créer mon compte</button>
+      <div class="lerr" id="rerr"></div>
+      <div class="lok" id="rok"></div>
+    </div>
+  </div>
+</div>
+
+<!-- MODALE ADMIN UTILISATEURS -->
+<div id="admin-panel">
+  <div class="admin-box">
+    <button class="admin-close" onclick="closeAdminPanel()">✕</button>
+    <h3>Gestion des comptes</h3>
+    <div id="admin-user-list"></div>
+  </div>
+</div>
+
+<!-- APP -->
+<div id="app">
+  <!-- NAV DESKTOP -->
+  <nav>
+    <span class="nav-logo">Mes <em>Recettes</em></span>
+    <div class="nav-tabs">
+      <button class="tab on"    onclick="go('add',this)">+ Nouvelle</button>
+      <button class="tab"       onclick="go('recipes',this)">Recettes</button>
+      <button class="tab"       onclick="go('planning',this)">Planning</button>
+      <button class="tab"       onclick="go('shopping',this)">Courses</button>
+    </div>
+    <span id="nav-username"></span>
+    <button class="btn-logout" onclick="doLogout()">Déconnexion</button>
+    <span id="sync-dot" title="Synchronisé" style="font-size:.75rem;color:var(--ink-muted);cursor:default;margin-left:.25rem;transition:color .3s">⬤</span>
+    <button onclick="doForceSync()" title="Synchroniser maintenant" style="background:none;border:none;font-size:.75rem;color:var(--ink-muted);cursor:pointer;font-family:'DM Sans',sans-serif;padding:0 .15rem;transition:color .18s" onmouseenter="this.style.color='var(--accent)'" onmouseleave="this.style.color='var(--ink-muted)'">↻ Sync</button>
+  </nav>
+
+  <!-- BARRE UTILISATEUR MOBILE (top) -->
+  <div class="nav-user-row" id="nav-user-row-m">
+    <div class="nav-user-row-left">
+      <span class="nav-user-logo">Mes <em>Recettes</em></span>
+      <span class="nav-user-name" id="nav-username-m"></span>
+    </div>
+    <div class="nav-user-row-right">
+      <span id="nav-sync-dot-m" title="Synchronisé">⬤</span>
+      <button onclick="doForceSync()" style="background:none;border:none;font-size:.75rem;color:var(--ink-muted);cursor:pointer;font-family:'DM Sans',sans-serif;padding:0;-webkit-tap-highlight-color:transparent">↻</button>
+      <button onclick="doLogout()" style="background:none;border:none;font-size:.75rem;color:var(--ink-muted);cursor:pointer;font-family:'DM Sans',sans-serif;padding:0;-webkit-tap-highlight-color:transparent">Déco</button>
+    </div>
+  </div>
+  <main>
+
+    <!-- NOUVELLE RECETTE -->
+    <div id="p-add" class="page on">
+
+      <!-- Import URL -->
+      <div class="import-card">
+        <h4>Importer depuis une URL</h4>
+        <p class="sub">Colle l'adresse d'une recette Marmiton, 750g, AllRecipes… Les données JSON-LD sont lues via des proxies CORS gratuits (allorigins, corsproxy, thingproxy). <em>Certains sites peuvent bloquer l'accès.</em></p>
+        <div class="url-row">
+          <input type="url" id="import-url" placeholder="https://www.marmiton.org/recettes/…"/>
+          <button onclick="doImportUrl()">Importer</button>
+        </div>
+        <div class="import-status" id="import-status"></div>
+      </div>
+
+      <div class="form-card">
+        <h3 id="form-title">Nouvelle recette</h3>
+        <input type="hidden" id="edit-id"/>
+
+        <div class="form-row">
+          <label>Nom de la recette *</label>
+          <input class="finput" id="f-name" placeholder="Ex : Tarte tatin aux pommes"/>
+        </div>
+
+        <div class="form-row">
+          <label>Description courte</label>
+          <input class="finput" id="f-desc" placeholder="Une courte phrase appétissante…"/>
+        </div>
+
+        <div class="form-row2">
+          <div>
+            <label>Prép. (min)</label>
+            <input class="finput" id="f-prep" type="number" min="0" placeholder="15"/>
+          </div>
+          <div>
+            <label>Cuisson (min)</label>
+            <input class="finput" id="f-cook" type="number" min="0" placeholder="30"/>
+          </div>
+          <div>
+            <label>Personnes</label>
+            <input class="finput" id="f-serv" type="number" min="1" placeholder="4"/>
+          </div>
+        </div>
+
+        <div class="form-row">
+          <label>Calories / portion (kcal)</label>
+          <input class="finput" id="f-cal" type="number" min="0" placeholder="450"/>
+        </div>
+
+        <!-- Ingrédients -->
+        <div class="form-row">
+          <label>Ingrédients</label>
+          <div class="ing-builder">
+            <div class="ing-builder-head">
+              <span>Quantité · Unité · Nom</span>
+            </div>
+            <div class="ing-rows" id="ing-rows"></div>
+          </div>
+          <button class="btn-add-row" onclick="addIngRow()">+ Ajouter un ingrédient</button>
+        </div>
+
+        <!-- Étapes -->
+        <div class="form-row">
+          <label>Étapes de préparation</label>
+          <div class="step-rows" id="step-rows"></div>
+          <button class="btn-add-row" onclick="addStepRow()">+ Ajouter une étape</button>
+        </div>
+
+        <!-- Photo -->
+        <div class="form-row3">
+          <div>
+            <label>Photo (optionnel)</label>
+            <div class="img-pick-zone" id="img-pick-zone" onclick="pickFormImage()">
+              <div class="ph">📷</div>
+              <div class="ph-txt">Choisir une image</div>
+              <span class="change-lbl">Changer</span>
+            </div>
+            <input type="hidden" id="f-img"/>
+          </div>
+          <div>
+            <label>URL source (optionnel)</label>
+            <input class="finput" id="f-url" placeholder="https://…" style="margin-top:.35rem"/>
+          </div>
+        </div>
+
+        <div class="form-actions">
+          <button class="btn-save" onclick="saveRecipe()">Enregistrer la recette</button>
+          <button class="btn-cancel" id="btn-cancel" onclick="resetForm()" style="display:none">Annuler</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- RECETTES -->
+    <div id="p-recipes" class="page">
+      <div class="recipes-header">
+        <div class="section-title">Mes recettes</div>
+        <button class="btn-del-all" onclick="delAllRecipes()">Tout effacer</button>
+      </div>
+      <div class="grid" id="grid"></div>
+      <div class="empty" id="empty" style="display:none">
+        Aucune recette — <a onclick="goAddTab()">commence par en créer une !</a>
+      </div>
+    </div>
+
+    <!-- PLANNING -->
+    <div id="p-planning" class="page">
+      <div class="planning-header">
+        <div style="display:flex;align-items:center;gap:.8rem;flex-wrap:wrap">
+          <div class="section-title">Planning repas</div>
+          <button class="btn-generate" onclick="openGenModal()">✨ Générer la semaine</button>
+        </div>
+        <div class="plan-nav">
+          <button onclick="planShift(-1)">&#8249;</button>
+          <span class="plan-week-label" id="plan-week-label"></span>
+          <button onclick="planShift(1)">&#8250;</button>
+        </div>
+      </div>
+      <div class="plan-grid" id="plan-grid"></div>
+    </div>
+
+    <!-- COURSES -->
+    <div id="p-shopping" class="page">
+      <div class="shop-header">
+        <h3>Liste de courses</h3>
+        <div class="shop-actions">
+          <button class="btn-print" onclick="doPrint()">Imprimer</button>
+          <button class="btn-wipe"  onclick="doWipe()">Vider</button>
+        </div>
+      </div>
+      <div class="shop-add-row">
+        <input type="text" id="manual-ing" placeholder="Ajouter un ingrédient manuellement…" onkeydown="if(event.key==='Enter')addManual()"/>
+        <button onclick="addManual()">＋</button>
+      </div>
+      <div id="shop-list"></div>
+    </div>
+
+  </main>
+
+  <!-- BOTTOM TABBAR MOBILE -->
+  <div id="bottom-nav">
+    <div class="bottom-tabs">
+      <button class="btab on" id="btab-add" onclick="goM('add',this)">
+        <svg viewBox="0 0 24 24"><circle cx="12" cy="12" r="9"/><line x1="12" y1="8" x2="12" y2="16"/><line x1="8" y1="12" x2="16" y2="12"/></svg>
+        Nouvelle
+      </button>
+      <button class="btab" id="btab-recipes" onclick="goM('recipes',this)">
+        <svg viewBox="0 0 24 24"><path d="M4 19.5A2.5 2.5 0 0 1 6.5 17H20"/><path d="M6.5 2H20v20H6.5A2.5 2.5 0 0 1 4 19.5v-15A2.5 2.5 0 0 1 6.5 2z"/></svg>
+        Recettes
+      </button>
+      <button class="btab" id="btab-planning" onclick="goM('planning',this)">
+        <svg viewBox="0 0 24 24"><rect x="3" y="4" width="18" height="18" rx="2"/><line x1="16" y1="2" x2="16" y2="6"/><line x1="8" y1="2" x2="8" y2="6"/><line x1="3" y1="10" x2="21" y2="10"/></svg>
+        Planning
+      </button>
+      <button class="btab" id="btab-shopping" onclick="goM('shopping',this)">
+        <svg viewBox="0 0 24 24"><path d="M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4z"/><line x1="3" y1="6" x2="21" y2="6"/><path d="M16 10a4 4 0 0 1-8 0"/></svg>
+        Courses
+      </button>
+    </div>
+  </div>
+
+</div>
+
+<!-- MODAL RECETTE -->
+<div id="modal">
+  <div class="mbox">
+    <button class="mclose" onclick="closeModal()">✕</button>
+    <div id="modal-body"></div>
+  </div>
+</div>
+
+<!-- MODAL GÉNÉRATION IA -->
+<div id="gen-modal">
+  <div class="gen-box">
+    <button class="gen-close" onclick="closeGenModal()">✕</button>
+    <h3>✨ Générer mon planning</h3>
+    <p class="gen-subtitle">Dis-moi ce dont tu as envie et je sélectionne tes recettes pour la semaine.</p>
+
+    <div class="gen-section">
+      <div class="gen-section-title">Type de plats</div>
+      <div class="gen-chips" id="gen-types">
+        <span class="gen-chip" data-val="viande">🥩 Viande</span>
+        <span class="gen-chip" data-val="poisson">🐟 Poisson</span>
+        <span class="gen-chip" data-val="végétarien">🥦 Végétarien</span>
+        <span class="gen-chip" data-val="végétalien">🌱 Végétalien</span>
+        <span class="gen-chip" data-val="pâtes">🍝 Pâtes</span>
+        <span class="gen-chip" data-val="soupe">🍲 Soupe</span>
+        <span class="gen-chip" data-val="salade">🥗 Salade</span>
+        <span class="gen-chip" data-val="plat froid">❄️ Plat froid</span>
+        <span class="gen-chip" data-val="rapide">⚡ Rapide</span>
+        <span class="gen-chip" data-val="comfort food">🧀 Comfort food</span>
+      </div>
+    </div>
+
+    <div class="gen-section">
+      <div class="gen-section-title">À exclure cette semaine</div>
+      <div class="gen-chips" id="gen-exclude">
+        <span class="gen-chip accent" data-val="sans viande rouge">🚫 Viande rouge</span>
+        <span class="gen-chip accent" data-val="sans gluten">🚫 Gluten</span>
+        <span class="gen-chip accent" data-val="sans lactose">🚫 Lactose</span>
+        <span class="gen-chip accent" data-val="sans fruits de mer">🚫 Fruits de mer</span>
+        <span class="gen-chip accent" data-val="sans porc">🚫 Porc</span>
+      </div>
+    </div>
+
+    <div class="gen-section">
+      <div class="gen-section-title">Repas par jour</div>
+      <div class="gen-chips" id="gen-meals">
+        <span class="gen-chip on" data-val="1">1 repas</span>
+        <span class="gen-chip" data-val="2">2 repas</span>
+        <span class="gen-chip" data-val="3">3 repas</span>
+      </div>
+    </div>
+
+    <div class="gen-section">
+      <div class="gen-section-title">Envies particulières <span style="font-size:.72rem;font-weight:400;text-transform:none;letter-spacing:0">(optionnel)</span></div>
+      <textarea class="gen-note" id="gen-note" rows="2" placeholder="ex : plutôt léger cette semaine, des plats avec des légumes de saison…"></textarea>
+    </div>
+
+    <div id="gen-status" class="gen-status">⏳ Claude choisit tes recettes…</div>
+
+    <div id="gen-preview" class="gen-preview">
+      <div class="gen-preview-title">Planning proposé</div>
+      <div id="gen-preview-days"></div>
+      <div class="gen-confirm-row">
+        <button class="btn-gen-retry" onclick="doGenerate()">↻ Réessayer</button>
+        <button class="btn-gen-confirm" onclick="applyGenPlan()">✓ Appliquer au planning</button>
+      </div>
+    </div>
+
+    <div class="gen-footer" id="gen-footer">
+      <button class="btn-gen-cancel" onclick="closeGenModal()">Annuler</button>
+      <button class="btn-gen-go" id="btn-gen-go" onclick="doGenerate()">✨ Générer</button>
+    </div>
+  </div>
+</div>
+
+<!-- MODAL PLANNING -->
+<div id="plan-modal">
+  <div class="pmbox">
+    <button class="pm-close" onclick="closePlanModal()">✕</button>
+    <h3 id="pm-title">Ajouter une recette</h3>
+    <p class="pm-sub" id="pm-sub"></p>
+    <input class="pm-search" type="text" id="pm-search" placeholder="Rechercher…" oninput="filterPlanList()"/>
+    <div class="pm-list" id="pm-list"></div>
+  </div>
+</div>
+
+<script>
+// ── VARIABLES GLOBALES ──
+let _recipeCache = [];
+let _formImg = '';
+let _planWeekOffset = 0;
+let _planTargetDate = null;
+
+// ── AUTH MULTI-UTILISATEURS ──
+// Les comptes sont stockés dans JSONBin sous la clé "users"
+// Format : { users: [{name, hash, role}], recipes_X, plan_X, cart_X, ... }
+// Le hash est un hash simple (djb2) — suffisant pour une app personnelle locale
+let _currentUser = null; // {name, role}
+
+function hashPass(str){
+  let h=5381;
+  for(let i=0;i<str.length;i++) h=((h<<5)+h)+str.charCodeAt(i)|0;
+  return h.toString(36);
+}
+
+// Onglets login/inscription
+function showLoginTab(tab){
+  document.getElementById('login-panel').style.display = tab==='login'?'block':'none';
+  document.getElementById('reg-panel').style.display   = tab==='reg'?'block':'none';
+  document.getElementById('tab-login').classList.toggle('on', tab==='login');
+  document.getElementById('tab-reg').classList.toggle('on', tab==='reg');
+  document.getElementById('lerr').style.display='none';
+  document.getElementById('rerr').style.display='none';
+  document.getElementById('rok').style.display='none';
+}
+
+// ── CONNEXION ──
+async function doLogin(){
+  const u=document.getElementById('u').value.trim();
+  const p=document.getElementById('p').value;
+  document.getElementById('lerr').style.display='none';
+  if(!u||!p){ document.getElementById('lerr').textContent='Remplis tous les champs.'; document.getElementById('lerr').style.display='block'; return; }
+
+  // Charger les utilisateurs depuis JSONBin
+  const cloud=await jbinRead();
+  const users=(cloud&&Array.isArray(cloud.users))?cloud.users:[];
+
+  // Compte admin Ludivine (toujours valide, même si JSONBin vide)
+  const ADMIN={name:'Ludivine',hash:hashPass('Ludivine68*'),role:'admin'};
+  if(!users.find(function(x){ return x.name==='Ludivine'; })) users.unshift(ADMIN);
+
+  const found=users.find(function(x){ return x.name.toLowerCase()===u.toLowerCase(); });
+  if(!found||found.hash!==hashPass(p)){
+    document.getElementById('lerr').textContent='Pseudo ou mot de passe incorrect.';
+    document.getElementById('lerr').style.display='block'; return;
+  }
+
+  _currentUser={name:found.name,role:found.role||'user'};
+  sessionStorage.setItem('auth', JSON.stringify(_currentUser));
+  enterApp();
+}
+
+// ── INSCRIPTION ──
+async function doRegister(){
+  const u=document.getElementById('ru').value.trim();
+  const p=document.getElementById('rp').value;
+  const p2=document.getElementById('rp2').value;
+  const errEl=document.getElementById('rerr');
+  const okEl=document.getElementById('rok');
+  errEl.style.display='none'; okEl.style.display='none';
+
+  function showErr(msg){ errEl.textContent=msg; errEl.style.display='block'; }
+
+  if(!u||!p||!p2){ showErr('Remplis tous les champs.'); return; }
+  if(u.length<2){ showErr('Le pseudo doit faire au moins 2 caract\u00e8res.'); return; }
+  if(/[^a-zA-Z0-9_\-\u00C0-\u024F]/.test(u)){ showErr('Pseudo invalide (lettres, chiffres, _ ou - uniquement).'); return; }
+  if(p.length<6){ showErr('Le mot de passe doit faire au moins 6 caract\u00e8res.'); return; }
+  if(p!==p2){ showErr('Les mots de passe ne correspondent pas.'); return; }
+
+  document.getElementById('btn-reg').disabled=true;
+  document.getElementById('btn-reg').textContent='Cr\u00e9ation\u2026';
+
+  const cloud=await jbinRead()||{};
+  const users=Array.isArray(cloud.users)?cloud.users:[];
+  const ADMIN={name:'Ludivine',hash:hashPass('Ludivine68*'),role:'admin'};
+  if(!users.find(function(x){ return x.name==='Ludivine'; })) users.unshift(ADMIN);
+
+  if(users.find(function(x){ return x.name.toLowerCase()===u.toLowerCase(); })){
+    showErr('Ce pseudo est d\u00e9j\u00e0 pris.'); document.getElementById('btn-reg').disabled=false; document.getElementById('btn-reg').textContent='Cr\u00e9er mon compte'; return;
+  }
+
+  users.push({name:u, hash:hashPass(p), role:'user'});
+  cloud.users=users;
+  await jbinWrite(cloud);
+
+  okEl.textContent='Compte cr\u00e9\u00e9 ! Tu peux te connecter.';
+  okEl.style.display='block';
+  document.getElementById('ru').value='';
+  document.getElementById('rp').value='';
+  document.getElementById('rp2').value='';
+  document.getElementById('btn-reg').disabled=false;
+  document.getElementById('btn-reg').textContent='Cr\u00e9er mon compte';
+  setTimeout(function(){ showLoginTab('login'); document.getElementById('u').value=u; }, 1500);
+}
+
+// ── ENTER APP ──
+function enterApp(){
+  document.getElementById('login').style.display='none';
+  document.getElementById('app').style.display='flex';
+  // Desktop: nom utilisateur
+  var navUser=document.getElementById('nav-username');
+  if(navUser) navUser.textContent=_currentUser.name;
+  // Mobile: nom utilisateur dans barre top
+  var navUserM=document.getElementById('nav-username-m');
+  if(navUserM) navUserM.textContent=_currentUser.name;
+  // Admin: bouton Comptes (desktop + mobile)
+  if(_currentUser.role==='admin'){
+    var ab=document.getElementById('nav-admin-btn');
+    if(!ab){
+      ab=document.createElement('button');
+      ab.id='nav-admin-btn'; ab.className='admin-btn'; ab.textContent='\u2699\ufe0f Comptes';
+      ab.onclick=openAdminPanel;
+      document.getElementById('nav-username').insertAdjacentElement('afterend',ab);
+    }
+    var abm=document.getElementById('nav-admin-btn-m');
+    if(!abm){
+      abm=document.createElement('button');
+      abm.id='nav-admin-btn-m';
+      abm.style.cssText='background:none;border:none;font-size:.8rem;color:var(--ink-muted);cursor:pointer;padding:0;-webkit-tap-highlight-color:transparent';
+      abm.textContent='\u2699\ufe0f';
+      abm.onclick=openAdminPanel;
+      var navRight=document.querySelector('.nav-user-row-right');
+      if(navRight) navRight.insertAdjacentElement('afterbegin',abm);
+    }
+  }
+  initApp();
+}
+function doLogout(){
+  sessionStorage.removeItem('auth');
+  _currentUser=null;
+  location.reload();
+}
+
+// Reprise de session
+(function(){
+  const saved=sessionStorage.getItem('auth');
+  if(saved){ try{ _currentUser=JSON.parse(saved); enterApp(); }catch(e){ sessionStorage.removeItem('auth'); } }
+})();
+
+document.getElementById('btn-login').addEventListener('click',doLogin);
+document.querySelectorAll('#login-panel .field').forEach(function(f){
+  f.addEventListener('keydown',function(e){ if(e.key==='Enter') doLogin(); });
+});
+document.querySelectorAll('#reg-panel .field').forEach(function(f){
+  f.addEventListener('keydown',function(e){ if(e.key==='Enter') doRegister(); });
+});
+
+// ── ADMIN : GESTION COMPTES ──
+async function openAdminPanel(){
+  document.getElementById('admin-panel').classList.add('on');
+  renderAdminUsers();
+}
+function closeAdminPanel(){ document.getElementById('admin-panel').classList.remove('on'); }
+
+async function renderAdminUsers(){
+  const list=document.getElementById('admin-user-list');
+  list.innerHTML='<p style="font-size:.8rem;color:var(--ink-muted);text-align:center;padding:.5rem">Chargement\u2026</p>';
+  const cloud=await jbinRead()||{};
+  const users=Array.isArray(cloud.users)?cloud.users:[];
+  const ADMIN={name:'Ludivine',hash:hashPass('Ludivine68*'),role:'admin'};
+  if(!users.find(function(x){ return x.name==='Ludivine'; })) users.unshift(ADMIN);
+  list.innerHTML='';
+  if(!users.length){ list.innerHTML='<p style="font-size:.8rem;color:var(--ink-muted);text-align:center">Aucun compte.</p>'; return; }
+  users.forEach(function(u){
+    const row=document.createElement('div'); row.className='user-row';
+    const left=document.createElement('div');
+    const nm=document.createElement('span'); nm.className='user-row-name'; nm.textContent=u.name;
+    const role=document.createElement('span'); role.className='user-row-role'; role.textContent=u.role==='admin'?'admin':'membre';
+    left.appendChild(nm); left.appendChild(role); row.appendChild(left);
+    if(u.name!=='Ludivine'){
+      const del=document.createElement('button'); del.className='user-del-btn'; del.textContent='\u{1F5D1} Supprimer';
+      del.onclick=async function(){
+        if(!confirm('Supprimer le compte de '+u.name+' ? Ses recettes resteront dans le cloud.')) return;
+        const c=await jbinRead()||{};
+        c.users=(Array.isArray(c.users)?c.users:[]).filter(function(x){ return x.name!==u.name; });
+        await jbinWrite(c);
+        renderAdminUsers();
+      };
+      row.appendChild(del);
+    }
+    list.appendChild(row);
+  });
+}
+async function initApp(){
+  addIngRow(); addStepRow();
+  setSyncIndicator('saving');
+  const cloud=await jbinRead();
+  if(cloud && typeof cloud==='object'){
+    const un=_currentUser?_currentUser.name:'default';
+    const cloudRecipes=cloud['recipes_'+un];
+    const cloudPlan=cloud['plan_'+un];
+    const cloudCart=cloud['cart_'+un];
+    const local={ recipes:recipesLoadLocal(), plan:planLoadLocal(), cart:cartLoadLocal() };
+    if(Array.isArray(cloudRecipes) && cloudRecipes.length>=local.recipes.length){
+      localStorage.setItem(userKey('recipes'),JSON.stringify(cloudRecipes));
+    }
+    if(cloudPlan && Object.keys(cloudPlan).length>=Object.keys(local.plan).length){
+      localStorage.setItem(userKey('mealplan'),JSON.stringify(cloudPlan));
+    }
+    if(Array.isArray(cloudCart) && cloudCart.length>=local.cart.length){
+      localStorage.setItem(userKey('cart2'),JSON.stringify(cloudCart));
+    }
+    setSyncIndicator('ok');
+  } else {
+    setSyncIndicator('err');
+  }
+  loadRecipes();
+}
+
+// ── NAV ──
+function go(name, btn){
+  document.querySelectorAll('.page').forEach(function(p){ p.classList.remove('on'); });
+  document.querySelectorAll('.tab').forEach(function(b){ b.classList.remove('on'); });
+  document.getElementById('p-'+name).classList.add('on');
+  if(btn) btn.classList.add('on');
+  // Sync bottom tabs
+  ['add','recipes','planning','shopping'].forEach(function(n){
+    const bt=document.getElementById('btab-'+n);
+    if(bt) bt.classList.toggle('on', n===name);
+  });
+  if(name==='recipes') loadRecipes();
+  if(name==='shopping') renderCart();
+  if(name==='planning') renderPlanning();
+  // Scroll to top on mobile
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+function goM(name, btn){
+  // Called from bottom tabbar
+  go(name, null);
+  // Also sync top desktop tabs
+  document.querySelectorAll('.tab').forEach(function(b){ b.classList.remove('on'); });
+  const pages=['add','recipes','planning','shopping'];
+  const idx=pages.indexOf(name);
+  const tabs=document.querySelectorAll('.tab');
+  if(tabs[idx]) tabs[idx].classList.add('on');
+}
+function goAddTab(){
+  const tab=document.querySelector('.tab');
+  go('add',tab);
+}
+
+// ── JSONBIN CONFIG ──
+const JBIN = {
+  key:  '$2a$10$HyllB/ewHOP785UJvIpKuupPBULyO3W5rNxOZkoivMTM/IOdJs27a',
+  bin:  '6a246236da38895dfe91cd66',
+  base: 'https://api.jsonbin.io/v3/b'
+};
+let _syncTimeout=null, _syncing=false;
+
+// Indicateur de sync dans la nav
+function setSyncIndicator(state){
+  const map={idle:'●',saving:'↻',ok:'✓',err:'⚠'};
+  const col={idle:'var(--ink-muted)',saving:'var(--blue)',ok:'var(--green)',err:'var(--red)'};
+  const titles={idle:'Synchronisé',saving:'Synchronisation…',ok:'Sauvegardé sur JSONBin',err:'Erreur de sync'};
+  function applyDot(el){
+    if(!el) return;
+    el.textContent=map[state]||'●';
+    el.style.color=col[state]||'var(--ink-muted)';
+    el.title=titles[state]||'';
+  }
+  applyDot(document.getElementById('sync-dot'));
+  applyDot(document.getElementById('nav-sync-dot-m'));
+  if(state==='ok') setTimeout(function(){ setSyncIndicator('idle'); },2500);
+}
+
+// Lecture sur JSONBin
+async function jbinRead(){
+  try{
+    const res=await fetch(`${JBIN.base}/${JBIN.bin}/latest`,{
+      headers:{'X-Master-Key':JBIN.key,'X-Bin-Meta':'false'},
+      signal:AbortSignal.timeout(10000)
+    });
+    if(!res.ok) return null;
+    return await res.json();
+  }catch(e){ return null; }
+}
+
+// Écriture sur JSONBin (debounce 800ms pour éviter les spams)
+async function jbinWrite(data){
+  if(_syncing) return;
+  _syncing=true;
+  setSyncIndicator('saving');
+  try{
+    const res=await fetch(`${JBIN.base}/${JBIN.bin}`,{
+      method:'PUT',
+      headers:{'Content-Type':'application/json','X-Master-Key':JBIN.key},
+      body:JSON.stringify(data),
+      signal:AbortSignal.timeout(15000)
+    });
+    setSyncIndicator(res.ok?'ok':'err');
+  }catch(e){ setSyncIndicator('err'); }
+  _syncing=false;
+}
+
+function scheduleSync(){
+  clearTimeout(_syncTimeout);
+  _syncTimeout=setTimeout(async function(){
+    const cloud=await jbinRead()||{};
+    const un=_currentUser?_currentUser.name:'default';
+    cloud['recipes_'+un]=recipesLoadLocal();
+    cloud['plan_'+un]=planLoadLocal();
+    cloud['cart_'+un]=cartLoadLocal();
+    jbinWrite(cloud);
+  },800);
+}
+
+// Sync immédiat (pour les recettes, sans debounce)
+async function scheduleSyncNow(){
+  clearTimeout(_syncTimeout);
+  const cloud=await jbinRead()||{};
+  const un=_currentUser?_currentUser.name:'default';
+  cloud['recipes_'+un]=recipesLoadLocal();
+  cloud['plan_'+un]=planLoadLocal();
+  cloud['cart_'+un]=cartLoadLocal();
+  jbinWrite(cloud);
+}
+
+async function doForceSync(){
+  const cloud=await jbinRead()||{};
+  const un=_currentUser?_currentUser.name:'default';
+  cloud['recipes_'+un]=recipesLoadLocal();
+  cloud['plan_'+un]=planLoadLocal();
+  cloud['cart_'+un]=cartLoadLocal();
+  await jbinWrite(cloud);
+}
+
+// ── STORAGE LOCAL (namespac\u00e9 par utilisateur) ──
+function userKey(k){ return _currentUser ? k+'_'+_currentUser.name : k; }
+function recipesLoadLocal(){ try{ return JSON.parse(localStorage.getItem(userKey('recipes'))||'[]'); }catch(e){ return []; } }
+function recipesLoad(){ return recipesLoadLocal(); }
+function recipesSave(l){ localStorage.setItem(userKey('recipes'),JSON.stringify(l)); scheduleSyncNow(); }
+
+// ── FORMULAIRE ──
+
+// Unités disponibles dans le sélecteur
+const UNITS = [
+  { label:'— unité —', value:'', group:null },
+  // Pièces / dénombrables
+  { label:'pièce(s)',  value:'pièce(s)',  group:'Quantité' },
+  { label:'tranche(s)',value:'tranche(s)',group:'Quantité' },
+  { label:'bouquet(s)',value:'bouquet(s)',group:'Quantité' },
+  { label:'botte(s)',  value:'botte(s)',  group:'Quantité' },
+  { label:'branche(s)',value:'branche(s)',group:'Quantité' },
+  { label:'feuille(s)',value:'feuille(s)',group:'Quantité' },
+  { label:'gousse(s)', value:'gousse(s)', group:'Quantité' },
+  { label:'œuf/œufs', value:'œuf(s)',    group:'Quantité' },
+  // Poids
+  { label:'g',  value:'g',  group:'Poids' },
+  { label:'kg', value:'kg', group:'Poids' },
+  { label:'mg', value:'mg', group:'Poids' },
+  // Volume
+  { label:'ml',   value:'ml',   group:'Volume' },
+  { label:'cl',   value:'cl',   group:'Volume' },
+  { label:'dl',   value:'dl',   group:'Volume' },
+  { label:'l',    value:'l',    group:'Volume' },
+  { label:'c. à café',value:'c. à café',group:'Volume' },
+  { label:'c. à soupe',value:'c. à soupe',group:'Volume' },
+  { label:'tasse(s)',  value:'tasse(s)',  group:'Volume' },
+  { label:'verre(s)',  value:'verre(s)',  group:'Volume' },
+  // Libre
+  { label:'autre…', value:'__custom__', group:null },
+];
+
+function buildUnitSelect(currentUnit){
+  // Vérifie si la valeur est dans la liste prédéfinie
+  const known = UNITS.filter(u=>u.value&&u.value!=='__custom__').map(u=>u.value);
+  const isCustom = currentUnit && !known.includes(currentUnit);
+  const selectVal = isCustom ? '__custom__' : (currentUnit||'');
+
+  // Construction du <select> avec <optgroup>
+  let html = '';
+  let lastGroup = undefined;
+  for(const u of UNITS){
+    if(u.group !== lastGroup){
+      if(lastGroup !== undefined) html += '</optgroup>';
+      if(u.group) html += `<optgroup label="${u.group}">`;
+      lastGroup = u.group;
+    }
+    const sel = u.value===selectVal ? ' selected' : '';
+    html += `<option value="${u.value}"${sel}>${u.label}</option>`;
+  }
+  if(lastGroup) html += '</optgroup>';
+  return { html, isCustom, customVal: isCustom ? currentUnit : '' };
+}
+
+function addIngRow(qty='',unit='',name=''){
+  const rows=document.getElementById('ing-rows');
+  const div=document.createElement('div');
+  div.className='ing-row-form';
+
+  // Qty input
+  const qtyInp=document.createElement('input');
+  qtyInp.className='ing-qty finput'; qtyInp.placeholder='Qté'; qtyInp.value=qty; qtyInp.title='Quantité';
+
+  // Unit wrapper
+  const uw=document.createElement('div'); uw.className='ing-unit-wrap';
+
+  const {html,isCustom,customVal}=buildUnitSelect(unit);
+  const sel=document.createElement('select'); sel.className='ing-unit-sel'; sel.title='Unité'; sel.innerHTML=html;
+  const caret=document.createElement('span'); caret.className='ing-unit-caret'; caret.textContent='▾';
+
+  // Champ libre (affiché si "autre…")
+  const customInp=document.createElement('input');
+  customInp.className='ing-unit-custom'; customInp.placeholder='ex: sachet(s)';
+  customInp.value=customVal;
+  if(isCustom) customInp.style.display='block';
+
+  sel.addEventListener('change',function(){
+    if(this.value==='__custom__'){ customInp.style.display='block'; customInp.focus(); }
+    else { customInp.style.display='none'; customInp.value=''; }
+  });
+
+  // Accesseur pour récupérer la valeur finale de l'unité
+  div.getUnit=function(){ return sel.value==='__custom__'? customInp.value.trim() : sel.value; };
+
+  uw.appendChild(sel); uw.appendChild(caret); uw.appendChild(customInp);
+
+  // Name input
+  const nameInp=document.createElement('input');
+  nameInp.className='ing-name finput'; nameInp.placeholder='Ingrédient'; nameInp.value=name; nameInp.title='Ingrédient';
+
+  // Delete
+  const del=document.createElement('button');
+  del.className='btn-ing-del'; del.title='Supprimer'; del.textContent='✕';
+  del.onclick=function(){ div.remove(); };
+
+  div.appendChild(qtyInp); div.appendChild(uw); div.appendChild(nameInp); div.appendChild(del);
+  rows.appendChild(div);
+}
+
+function addStepRow(text='', img=''){
+  const rows=document.getElementById('step-rows');
+  const idx=rows.children.length+1;
+  const div=document.createElement('div');
+  div.className='step-row';
+  div.dataset.stepImg = img;
+
+  // Numéro
+  const num=document.createElement('span');
+  num.className='step-num'; num.textContent=idx;
+
+  // Textarea
+  const ta=document.createElement('textarea');
+  ta.className='finput'; ta.rows=2;
+  ta.placeholder='Décris l\'étape '+idx+'…';
+  ta.value=text;
+
+  // Colonne droite : zone photo + URL
+  const rightCol=document.createElement('div');
+  rightCol.style.cssText='display:flex;flex-direction:column;gap:.35rem;flex-shrink:0;width:140px';
+
+  // Zone media (upload)
+  const media=document.createElement('div');
+  media.className='step-media';
+  media.style.cssText='width:100%;display:flex;flex-direction:column;gap:.3rem';
+
+  // Champ URL
+  const urlWrap=document.createElement('div');
+
+  const urlRow=document.createElement('div');
+  urlRow.className='step-url-row';
+
+  const urlInp=document.createElement('input');
+  urlInp.type='url';
+  urlInp.className='step-url-inp';
+  urlInp.placeholder='URL image…';
+
+  const urlBtn=document.createElement('button');
+  urlBtn.type='button';
+  urlBtn.className='step-url-btn';
+  urlBtn.textContent='OK';
+
+  const urlErr=document.createElement('div');
+  urlErr.className='step-url-err';
+
+  urlRow.appendChild(urlInp);
+  urlRow.appendChild(urlBtn);
+  urlWrap.appendChild(urlRow);
+  urlWrap.appendChild(urlErr);
+
+  function renderStepMedia(){
+    media.innerHTML='';
+    if(div.dataset.stepImg){
+      const thumb=document.createElement('img');
+      thumb.style.cssText='width:100%;height:54px;object-fit:cover;border-radius:6px;border:1px solid var(--border);display:block';
+      thumb.src=div.dataset.stepImg;
+      thumb.onerror=function(){ div.dataset.stepImg=''; renderStepMedia(); urlErr.textContent='Image inaccessible, essaie une autre URL.'; urlErr.style.display='block'; };
+      const del=document.createElement('button');
+      del.className='step-img-del'; del.textContent='✕ Retirer';
+      del.onclick=function(){ div.dataset.stepImg=''; urlInp.value=''; urlErr.style.display='none'; renderStepMedia(); };
+      media.appendChild(thumb); media.appendChild(del);
+    } else {
+      const ph=document.createElement('div');
+      ph.className='step-img-ph'; ph.title='Ajouter une photo (fichier)';
+      ph.innerHTML='📷<span class="step-img-ph-label" style="font-size:.55rem;line-height:1.2">Choisir un fichier</span>';
+      ph.style.cssText='width:100%;height:54px;border-radius:6px;border:1.5px dashed var(--bh);display:flex;flex-direction:column;align-items:center;justify-content:center;cursor:pointer;font-size:1rem;color:var(--ink-muted);transition:all .18s;gap:.1rem';
+      ph.onmouseenter=function(){ this.style.borderColor='var(--accent)'; this.style.color='var(--accent)'; this.style.background='var(--al)'; };
+      ph.onmouseleave=function(){ this.style.borderColor='var(--bh)'; this.style.color='var(--ink-muted)'; this.style.background=''; };
+      ph.onclick=function(){
+        const inp=document.createElement('input'); inp.type='file'; inp.accept='image/*';
+        inp.onchange=async function(){
+          urlErr.style.display='none';
+          const b64=await resizeImage(inp.files[0],800);
+          div.dataset.stepImg=b64; urlInp.value=''; renderStepMedia();
+        }; inp.click();
+      };
+      media.appendChild(ph);
+    }
+  }
+
+  // Charger image depuis URL (essai direct puis proxies CORS)
+  async function loadStepUrl(){
+    const raw=urlInp.value.trim();
+    if(!raw){ return; }
+    urlErr.style.display='none';
+
+    const tryDirect = () => new Promise((resolve,reject)=>{
+      const img=new Image(); img.crossOrigin='anonymous';
+      img.onload=()=>resolve(raw);
+      img.onerror=()=>reject();
+      img.src=raw;
+      setTimeout(()=>reject(),4000);
+    });
+
+    const fetchViaProxy = async(u)=>{
+      const proxies=[
+        `https://api.allorigins.win/raw?url=${encodeURIComponent(u)}`,
+        `https://corsproxy.io/?${encodeURIComponent(u)}`,
+        `https://thingproxy.freeboard.io/fetch/${encodeURIComponent(u)}`
+      ];
+      for(const p of proxies){
+        try{
+          const res=await fetch(p,{signal:AbortSignal.timeout(9000)});
+          if(!res.ok) continue;
+          const blob=await res.blob();
+          if(!blob.type.startsWith('image/')) continue;
+          return await new Promise(resolve=>{
+            const reader=new FileReader();
+            reader.onload=e=>resolve(e.target.result);
+            reader.readAsDataURL(blob);
+          });
+        }catch(e){ continue; }
+      }
+      return null;
+    };
+
+    urlBtn.textContent='…'; urlBtn.disabled=true;
+    try{
+      await tryDirect();
+      div.dataset.stepImg=raw;
+      renderStepMedia();
+    }catch(e){
+      urlBtn.textContent='Chargement…';
+      const b64=await fetchViaProxy(raw);
+      if(b64){
+        div.dataset.stepImg=b64;
+        urlInp.value='';
+        renderStepMedia();
+      } else {
+        urlErr.textContent='⚠ Image inaccessible. Télécharge-la sur ton PC puis utilise le bouton 📷.';
+        urlErr.style.display='block';
+      }
+    }
+    urlBtn.textContent='OK'; urlBtn.disabled=false;
+  }
+
+  urlBtn.addEventListener('click', loadStepUrl);
+  urlInp.addEventListener('keydown', e=>{ if(e.key==='Enter'){ e.preventDefault(); loadStepUrl(); } });
+
+  renderStepMedia();
+
+  // Supprimer
+  const del=document.createElement('button');
+  del.className='btn-ing-del'; del.title='Supprimer étape'; del.textContent='✕';
+  del.onclick=function(){ div.remove(); renumberSteps(); };
+
+  rightCol.appendChild(media);
+  rightCol.appendChild(urlWrap);
+
+  div.appendChild(num); div.appendChild(ta); div.appendChild(rightCol); div.appendChild(del);
+  rows.appendChild(div);
+}
+
+function renumberSteps(){
+  document.querySelectorAll('#step-rows .step-num').forEach((s,i)=>{ s.textContent=i+1; });
+}
+
+function pickFormImage(){
+  const inp=document.createElement('input');
+  inp.type='file'; inp.accept='image/*';
+  inp.onchange=async function(){
+    const file=inp.files[0]; if(!file) return;
+    const b64=await resizeImage(file,900);
+    _formImg=b64;
+    const zone=document.getElementById('img-pick-zone');
+    let img=zone.querySelector('img');
+    if(!img){ img=document.createElement('img'); zone.appendChild(img); }
+    img.src=b64;
+    zone.querySelector('.ph').style.display='none';
+    zone.querySelector('.ph-txt').style.display='none';
+  };
+  inp.click();
+}
+
+function saveRecipe(){
+  const name=document.getElementById('f-name').value.trim();
+  if(!name){ alert('Le nom de la recette est requis.'); return; }
+
+  const ingRows=[...document.querySelectorAll('#ing-rows .ing-row-form')];
+  const ingredients=ingRows
+    .map(r=>({
+      qty: r.querySelector('.ing-qty').value.trim(),
+      unit: typeof r.getUnit==='function' ? r.getUnit() : (r.querySelector('.ing-unit-sel')||{value:''}).value.replace('__custom__',''),
+      name: r.querySelector('.ing-name').value.trim()
+    }))
+    .filter(i=>i.name);
+
+  const steps=[...document.querySelectorAll('#step-rows .step-row')]
+    .map(row=>({ text: row.querySelector('textarea').value.trim(), img: row.dataset.stepImg||'' }))
+    .filter(s=>s.text);
+
+  const prep=document.getElementById('f-prep').value;
+  const cook=document.getElementById('f-cook').value;
+  const serv=document.getElementById('f-serv').value;
+  const cal =document.getElementById('f-cal').value;
+  const desc=document.getElementById('f-desc').value.trim();
+  const url =document.getElementById('f-url').value.trim();
+  const editId=document.getElementById('edit-id').value;
+
+  const recipe={
+    id: editId ? Number(editId) : Date.now(),
+    name,
+    description: desc,
+    image_url: _formImg || '',
+    ingredients,
+    instructions: steps,
+    prep_time: prep ? 'PT'+prep+'M' : '',
+    cook_time: cook ? 'PT'+cook+'M' : '',
+    servings: serv || '',
+    calories: cal || '',
+    source_url: url,
+    created_at: editId ? undefined : new Date().toISOString()
+  };
+
+  const list=recipesLoad();
+  if(editId){
+    const idx=list.findIndex(r=>String(r.id)===editId);
+    if(idx>=0){ recipe.created_at=list[idx].created_at; list[idx]=recipe; }
+    else list.unshift(recipe);
+  } else {
+    list.unshift(recipe);
+  }
+  recipesSave(list);
+  _recipeCache=list;
+  resetForm();
+  // Aller à l'onglet recettes
+  const tab=document.querySelectorAll('.tab')[1];
+  go('recipes',tab);
+}
+
+function resetForm(){
+  document.getElementById('f-name').value='';
+  document.getElementById('f-desc').value='';
+  document.getElementById('f-prep').value='';
+  document.getElementById('f-cook').value='';
+  document.getElementById('f-serv').value='';
+  document.getElementById('f-cal').value='';
+  document.getElementById('f-url').value='';
+  document.getElementById('edit-id').value='';
+  document.getElementById('form-title').textContent='Nouvelle recette';
+  document.getElementById('btn-cancel').style.display='none';
+  document.getElementById('ing-rows').innerHTML='';
+  document.getElementById('step-rows').innerHTML='';
+  _formImg='';
+  const zone=document.getElementById('img-pick-zone');
+  const img=zone.querySelector('img');
+  if(img) img.remove();
+  zone.querySelector('.ph').style.display='';
+  zone.querySelector('.ph-txt').style.display='';
+  addIngRow(); addStepRow();
+}
+
+function openEditForm(r){
+  closeModal();
+  document.getElementById('form-title').textContent='Modifier la recette';
+  document.getElementById('btn-cancel').style.display='';
+  document.getElementById('edit-id').value=String(r.id);
+  document.getElementById('f-name').value=r.name||'';
+  document.getElementById('f-desc').value=r.description||'';
+  document.getElementById('f-url').value=r.source_url||'';
+  document.getElementById('f-cal').value=r.calories||'';
+  document.getElementById('f-serv').value=r.servings||'';
+
+  const prep=r.prep_time?(r.prep_time.match(/PT(\d+)M/)||[])[1]||'':'';
+  const cook=r.cook_time?(r.cook_time.match(/PT(\d+)M/)||[])[1]||'':'';
+  document.getElementById('f-prep').value=prep;
+  document.getElementById('f-cook').value=cook;
+
+  document.getElementById('ing-rows').innerHTML='';
+  (r.ingredients||[]).forEach(i=>addIngRow(i.qty||'',i.unit||'',i.name||i));
+  if(!r.ingredients||!r.ingredients.length) addIngRow();
+
+  document.getElementById('step-rows').innerHTML='';
+  (r.instructions||[]).forEach(s=>{
+    const text = typeof s==='string' ? s : (s.text||'');
+    const img  = typeof s==='string' ? '' : (s.img||'');
+    addStepRow(text, img);
+  });
+  if(!r.instructions||!r.instructions.length) addStepRow();
+
+  _formImg=r.image_url||'';
+  const zone=document.getElementById('img-pick-zone');
+  const oldImg=zone.querySelector('img');
+  if(oldImg) oldImg.remove();
+  if(_formImg){
+    const img=document.createElement('img'); img.src=_formImg; zone.appendChild(img);
+    zone.querySelector('.ph').style.display='none';
+    zone.querySelector('.ph-txt').style.display='none';
+  } else {
+    zone.querySelector('.ph').style.display='';
+    zone.querySelector('.ph-txt').style.display='';
+  }
+
+  const tab=document.querySelector('.tab');
+  go('add',tab);
+  window.scrollTo({top:0,behavior:'smooth'});
+}
+
+// ── RECETTES ──
+
+function loadRecipes(){
+  const list=recipesLoad();
+  _recipeCache=list;
+  renderGrid(list);
+}
+
+function renderGrid(list){
+  const grid=document.getElementById('grid');
+  grid.innerHTML='';
+  document.getElementById('empty').style.display=list.length?'none':'block';
+  list.forEach(function(r){
+    const d=document.createElement('div');
+    d.className='card';
+    const ingCount=(r.ingredients||[]).length;
+
+    if(r.image_url){
+      const img=document.createElement('img'); img.className='card-img'; img.src=r.image_url;
+      img.onerror=function(){ this.replaceWith(cardPh()); };
+      d.appendChild(img);
+    } else { d.appendChild(cardPh()); }
+
+    const body=document.createElement('div'); body.className='card-body';
+    const h4=document.createElement('h4'); h4.textContent=r.name;
+    const pm=document.createElement('div'); pm.className='card-meta';
+    pm.appendChild(document.createTextNode(ingCount+' ingrédient'+(ingCount>1?'s':'')+(r.servings?' · '+r.servings+' pers.':'')));
+    if(r.calories){ const c=document.createElement('span'); c.className='card-cal'; c.textContent=r.calories+' kcal'; pm.appendChild(c); }
+
+    const actions=document.createElement('div'); actions.className='card-actions';
+    const bCourses=document.createElement('button'); bCourses.className='btn-courses'; bCourses.textContent='+ Courses';
+    bCourses.addEventListener('click',function(e){ e.stopPropagation(); openModal(r); });
+    const bPlan=document.createElement('button'); bPlan.className='btn-plan'; bPlan.textContent='Planning';
+    bPlan.addEventListener('click',function(e){ e.stopPropagation(); openPlanModalForRecipe(r); });
+    const bEdit=document.createElement('button'); bEdit.className='btn-edit'; bEdit.textContent='Modifier';
+    bEdit.addEventListener('click',function(e){ e.stopPropagation(); openEditForm(r); });
+    const bDel=document.createElement('button'); bDel.className='btn-del'; bDel.textContent='Suppr.';
+    bDel.addEventListener('click',function(e){ e.stopPropagation(); delRecipe(r.id); });
+
+    actions.appendChild(bCourses); actions.appendChild(bPlan); actions.appendChild(bEdit); actions.appendChild(bDel);
+    body.appendChild(h4); body.appendChild(pm); body.appendChild(actions);
+    d.appendChild(body);
+    d.addEventListener('click',function(){ openModal(r); });
+    grid.appendChild(d);
+  });
+}
+
+function cardPh(){
+  const ph=document.createElement('div'); ph.className='card-ph'; ph.textContent='🍽'; return ph;
+}
+
+function delAllRecipes(){
+  if(!confirm('Effacer TOUTES les recettes ?')) return;
+  recipesSave([]); _recipeCache=[]; renderGrid([]);
+}
+function delRecipe(id){
+  if(!confirm('Supprimer cette recette ?')) return;
+  const list=recipesLoad().filter(r=>r.id!==id && String(r.id)!==String(id));
+  recipesSave(list); _recipeCache=list; renderGrid(list);
+}
+
+// ── UTILITAIRES ──
+function fmt(t){ const m=(t||'').match(/PT(?:(\d+)H)?(?:(\d+)M)?/); return m?(m[1]?m[1]+'h ':'')+(m[2]?m[2]+'min':''):(t||''); }
+function ingLabel(i){ if(typeof i==='string') return i; return [i.qty,i.unit,i.name].filter(Boolean).join(' '); }
+function ingIcon(name){
+  const n=(name||'').toLowerCase();
+  if(/farine|blé|semoule|maïzena|amidon|levure/.test(n)) return '<svg class="ing-icon" viewBox="0 0 36 36" fill="none"><ellipse cx="18" cy="26" rx="12" ry="6" fill="#c8a96e"/><rect x="10" y="10" width="16" height="16" rx="3" fill="#e8d5a3"/><path d="M14 18h8M18 14v8" stroke="#b8965a" stroke-width="1.5" stroke-linecap="round"/></svg>';
+  if(/oeuf|œuf|egg/.test(n)) return '<svg class="ing-icon" viewBox="0 0 36 36" fill="none"><ellipse cx="18" cy="20" rx="9" ry="12" fill="#fff8e7" stroke="#e8c97a" stroke-width="1.5"/><circle cx="18" cy="22" r="4" fill="#f0a030" opacity=".7"/></svg>';
+  if(/lait|crème|beurre|fromage|yaourt|mascarpone|ricotta/.test(n)) return '<svg class="ing-icon" viewBox="0 0 36 36" fill="none"><rect x="11" y="10" width="14" height="18" rx="4" fill="#f5f0e8" stroke="#ddd0b8" stroke-width="1.5"/><path d="M15 16h6M15 20h4" stroke="#c8b890" stroke-width="1.5" stroke-linecap="round"/></svg>';
+  if(/sucre|miel|sirop|chocolat|cacao|vanille/.test(n)) return '<svg class="ing-icon" viewBox="0 0 36 36" fill="none"><rect x="10" y="14" width="16" height="12" rx="3" fill="#c8824a"/><path d="M14 14c0-4 8-4 8 0" stroke="#c8824a" stroke-width="1.5" fill="none"/></svg>';
+  if(/huile|olive|vinaigrette|vinaigre/.test(n)) return '<svg class="ing-icon" viewBox="0 0 36 36" fill="none"><rect x="14" y="18" width="8" height="10" rx="2" fill="#d4c060" opacity=".8"/><rect x="15" y="12" width="6" height="7" rx="1.5" fill="#b8a840" opacity=".7"/></svg>';
+  if(/poivre|sel|piment|épice|thym|basilic|persil|coriandre|romarin|origan/.test(n)) return '<svg class="ing-icon" viewBox="0 0 36 36" fill="none"><ellipse cx="18" cy="22" rx="7" ry="5" fill="#7aa860" opacity=".7"/><path d="M18 22 Q16 14 20 10" stroke="#5a8840" stroke-width="1.5" fill="none" stroke-linecap="round"/></svg>';
+  if(/poulet|boeuf|porc|viande|agneau|dinde|saucisse|jambon|lardons/.test(n)) return '<svg class="ing-icon" viewBox="0 0 36 36" fill="none"><ellipse cx="18" cy="20" rx="11" ry="8" fill="#e8805a" opacity=".8"/><path d="M12 16 Q18 12 24 16" stroke="#c06040" stroke-width="1.5" fill="none"/></svg>';
+  if(/poisson|saumon|thon|crevette/.test(n)) return '<svg class="ing-icon" viewBox="0 0 36 36" fill="none"><path d="M8 20 Q18 10 28 20 Q18 26 8 20Z" fill="#6ab0d8" opacity=".8"/></svg>';
+  if(/tomate|carotte|oignon|ail|courgette|poivron|champignon|épinard|légume|brocoli|céleri/.test(n)) return '<svg class="ing-icon" viewBox="0 0 36 36" fill="none"><circle cx="18" cy="22" r="9" fill="#7bc85a" opacity=".75"/><path d="M18 13 Q15 8 12 10" stroke="#5a9a38" stroke-width="1.5" fill="none" stroke-linecap="round"/></svg>';
+  if(/pomme|banane|citron|orange|mangue|fruit|raisin/.test(n)) return '<svg class="ing-icon" viewBox="0 0 36 36" fill="none"><circle cx="18" cy="22" r="9" fill="#f0a050" opacity=".8"/><path d="M18 13 Q17 8 20 7" stroke="#c87030" stroke-width="1.5" fill="none" stroke-linecap="round"/></svg>';
+  if(/eau|bouillon|vin|bière|jus|sauce/.test(n)) return '<svg class="ing-icon" viewBox="0 0 36 36" fill="none"><path d="M13 14 L11 28 Q11 30 18 30 Q25 30 25 28 L23 14Z" fill="#78b8e8" opacity=".6"/></svg>';
+  if(/riz|pâte|macaroni|spaghetti|quinoa/.test(n)) return '<svg class="ing-icon" viewBox="0 0 36 36" fill="none"><rect x="10" y="15" width="16" height="14" rx="3" fill="#f0d898" stroke="#d8b860" stroke-width="1.5"/></svg>';
+  return '<svg class="ing-icon" viewBox="0 0 36 36" fill="none"><circle cx="18" cy="20" r="10" fill="#d4b896" opacity=".5"/><path d="M14 20h8M18 16v8" stroke="#a07850" stroke-width="1.5" stroke-linecap="round" opacity=".7"/></svg>';
+}
+
+// ── MODAL RECETTE ──
+function openModal(r){
+  if(!r) return;
+  window._modalRecipe=r;
+  const body=document.getElementById('modal-body');
+  body.innerHTML='';
+
+  if(r.image_url){
+    const wrap=document.createElement('div'); wrap.className='mimg-wrap';
+    const img=document.createElement('img'); img.src=r.image_url;
+    img.onerror=function(){ wrap.remove(); };
+    img.style.cssText='width:100%;max-height:280px;object-fit:cover;display:block;border-radius:var(--rl) var(--rl) 0 0';
+    wrap.appendChild(img); body.appendChild(wrap);
+  }
+
+  const content=document.createElement('div'); content.className='mcontent';
+  const h2=document.createElement('h2'); h2.textContent=r.name; content.appendChild(h2);
+
+  const meta=document.createElement('div'); meta.className='mmeta';
+  const mparts=[];
+  if(r.prep_time) mparts.push('⏱ '+fmt(r.prep_time));
+  if(r.cook_time) mparts.push('🍳 '+fmt(r.cook_time));
+  if(r.servings)  mparts.push('👤 '+r.servings+' pers.');
+  mparts.forEach(function(pt,i){
+    if(i>0){ const s=document.createElement('span'); s.className='sep'; s.textContent='·'; meta.appendChild(s); }
+    meta.appendChild(document.createTextNode(pt));
+  });
+  if(r.source_url){
+    if(mparts.length){ const s=document.createElement('span'); s.className='sep'; s.textContent='·'; meta.appendChild(s); }
+    const a=document.createElement('a'); a.href=r.source_url; a.target='_blank'; a.textContent='Source'; a.style.color='var(--accent)';
+    meta.appendChild(a);
+  }
+  content.appendChild(meta);
+
+  if(r.calories){ const c=document.createElement('div'); c.className='mcal'; c.textContent='~'+r.calories+' kcal / portion'; content.appendChild(c); }
+
+  // Boutons action
+  const planBtn=document.createElement('button'); planBtn.className='m-plan-btn'; planBtn.textContent='📅 Ajouter au planning';
+  planBtn.addEventListener('click',function(){ closeModal(); openPlanModalForRecipe(r); });
+  content.appendChild(planBtn);
+
+  if(r.description){ const p=document.createElement('p'); p.className='mdesc'; p.textContent=r.description; content.appendChild(p); }
+
+  const ings=r.ingredients||[];
+  if(ings.length){
+    const sr=document.createElement('div'); sr.className='sec-title';
+    const ss=document.createElement('span'); ss.textContent='Ingrédients';
+    const ba=document.createElement('button'); ba.className='btn-add-all'; ba.textContent='＋ Tout ajouter'; ba.addEventListener('click',addAllToCart);
+    sr.appendChild(ss); sr.appendChild(ba); content.appendChild(sr);
+
+    const cart=cartLoad();
+    const ul=document.createElement('ul'); ul.className='ing-list';
+    ings.forEach(function(ing,idx){
+      const label=ingLabel(ing);
+      const ingName=typeof ing==='string'?ing:(ing.name||'');
+      const li=document.createElement('li'); li.className='ing-item';
+      const left=document.createElement('div'); left.className='ing-item-left';
+      left.innerHTML=ingIcon(ingName);
+      const span=document.createElement('span'); span.textContent=label; left.appendChild(span);
+      const btn=document.createElement('button'); btn.className='btn-add-ing'; btn.id='ibtn-'+r.id+'-'+idx;
+      const already=!!cart.find(function(c){ return c.name===label; });
+      if(already){ btn.textContent='✓ Ajouté'; btn.classList.add('added'); btn.disabled=true; }
+      else { btn.textContent='＋ Courses'; btn.addEventListener('click',function(){ addIngToCart(ing,r.id+'-'+idx); }); }
+      li.appendChild(left); li.appendChild(btn); ul.appendChild(li);
+    });
+    content.appendChild(ul);
+  }
+
+  if(r.instructions&&r.instructions.length){
+    const st=document.createElement('div'); st.className='sec-title'; st.textContent='Préparation'; content.appendChild(st);
+    const ol=document.createElement('ol');
+    r.instructions.forEach(function(step,i){
+      const text = typeof step==='string' ? step : (step.text||'');
+      const img  = typeof step==='string' ? '' : (step.img||'');
+      const li=document.createElement('li'); li.className='m-step';
+      const num=document.createElement('span'); num.className='m-step-num'; num.textContent=i+1+'.';
+      const body2=document.createElement('div'); body2.className='m-step-body';
+      const txt=document.createElement('p'); txt.className='m-step-txt'; txt.textContent=text;
+      body2.appendChild(txt);
+      if(img){ const im=document.createElement('img'); im.className='m-step-img'; im.src=img; body2.appendChild(im); }
+      li.appendChild(num); li.appendChild(body2); ol.appendChild(li);
+    });
+    content.appendChild(ol);
+  }
+
+  body.appendChild(content);
+  document.getElementById('modal').classList.add('on');
+}
+
+function closeModal(){ document.getElementById('modal').classList.remove('on'); }
+document.getElementById('modal').addEventListener('click',function(e){ if(e.target===e.currentTarget) closeModal(); });
+
+function addIngToCart(ing,btnKey){
+  const label=ingLabel(ing); const cart=cartLoad();
+  if(!cart.find(function(c){ return c.name===label; }))
+    cart.push({name:label,qty:(typeof ing==='object'?ing.qty:'')||'',unit:(typeof ing==='object'?ing.unit:'')||'',done:false});
+  cartSave(cart);
+  const btn=document.getElementById('ibtn-'+btnKey);
+  if(btn){ btn.textContent='✓ Ajouté'; btn.classList.add('added'); btn.disabled=true; }
+}
+
+function addAllToCart(){
+  const r=window._modalRecipe; if(!r) return;
+  const cart=cartLoad();
+  (r.ingredients||[]).forEach(function(ing,idx){
+    const label=ingLabel(ing);
+    if(!cart.find(function(c){ return c.name===label; }))
+      cart.push({name:label,qty:(typeof ing==='object'?ing.qty:'')||'',unit:(typeof ing==='object'?ing.unit:'')||'',done:false});
+    const btn=document.getElementById('ibtn-'+r.id+'-'+idx);
+    if(btn){ btn.textContent='✓ Ajouté'; btn.classList.add('added'); btn.disabled=true; }
+  });
+  cartSave(cart);
+}
+
+// ── IMPORT URL (JSON-LD via proxy CORS gratuit) ──
+async function doImportUrl(){
+  const url=document.getElementById('import-url').value.trim();
+  if(!url){ return; }
+  setImportStatus('Récupération de la page…','is-load');
+
+  // Proxies CORS gratuits en cascade (3 tentatives)
+  const importProxies=[
+    async(u)=>{
+      const res=await fetch(`https://api.allorigins.win/get?url=${encodeURIComponent(u)}`,{signal:AbortSignal.timeout(14000)});
+      if(!res.ok) return null;
+      const data=await res.json().catch(()=>null);
+      return data?(data.contents||null):null;
+    },
+    async(u)=>{
+      const res=await fetch(`https://corsproxy.io/?${encodeURIComponent(u)}`,{signal:AbortSignal.timeout(14000)});
+      if(!res.ok) return null;
+      return await res.text().catch(()=>null);
+    },
+    async(u)=>{
+      const res=await fetch(`https://thingproxy.freeboard.io/fetch/${encodeURIComponent(u)}`,{signal:AbortSignal.timeout(14000)});
+      if(!res.ok) return null;
+      return await res.text().catch(()=>null);
+    }
+  ];
+
+  let html='';
+  for(const proxyFn of importProxies){
+    try{
+      const result=await proxyFn(url);
+      if(result&&result.length>500){ html=result; break; }
+    }catch(e){ continue; }
+  }
+  if(!html){ setImportStatus('Impossible de récupérer la page. Le site bloque peut-être les accès externes. Essaie une autre URL.','is-err'); return; }
+
+  // Chercher tous les blocs JSON-LD
+  const ldMatches=[...html.matchAll(/<script[^>]+type=["']application\/ld\+json["'][^>]*>([\s\S]*?)<\/script>/gi)];
+  let recipe=null;
+  for(const m of ldMatches){
+    try{
+      let obj=JSON.parse(m[1].trim());
+      if(Array.isArray(obj)) obj=obj.find(o=>o['@type']==='Recipe')||obj[0];
+      if(obj&&(obj['@type']==='Recipe'||(Array.isArray(obj['@type'])&&obj['@type'].includes('Recipe')))){ recipe=obj; break; }
+      if(obj&&obj['@graph']){ const r2=obj['@graph'].find(o=>o['@type']==='Recipe'); if(r2){ recipe=r2; break; } }
+    }catch(e){}
+  }
+  if(!recipe){ setImportStatus('Aucune donnée de recette trouvée sur cette page (JSON-LD manquant).','is-err'); return; }
+
+  // Parser les ingrédients
+  const ingredients=(recipe.recipeIngredient||[]).map(function(s){
+    const m=s.match(/^([\d½¼¾⅓⅔.,/]+)?\s*([a-zA-Zàâéèêëîïôùûüç.]+\.)?\s*(.+)$/);
+    if(m) return {qty:(m[1]||'').trim(),unit:(m[2]||'').replace('.','').trim(),name:(m[3]||s).trim()};
+    return {qty:'',unit:'',name:s.trim()};
+  });
+
+  // Parser les instructions
+  const rawInstr=recipe.recipeInstructions||[];
+  const instructions=[];
+  function extractSteps(arr){
+    for(const item of arr){
+      if(typeof item==='string'){ instructions.push({text:item,img:''}); }
+      else if(item['@type']==='HowToStep'){ instructions.push({text:item.text||item.name||'',img:item.image?resolveImg(item.image):''}); }
+      else if(item['@type']==='HowToSection'&&item.itemListElement){ extractSteps(item.itemListElement); }
+    }
+  }
+  function resolveImg(v){ if(typeof v==='string') return v; if(Array.isArray(v)) return resolveImg(v[0]); if(v&&v.url) return v.url; return ''; }
+  extractSteps(rawInstr);
+
+  // Image principale
+  let imgUrl='';
+  if(recipe.image){ imgUrl=resolveImg(recipe.image); }
+
+  // Calories
+  let calories='';
+  if(recipe.nutrition){ const n=recipe.nutrition; calories=(n.calories||'').toString().replace(/[^\d]/g,''); }
+
+  // Pré-remplir le formulaire
+  document.getElementById('f-name').value=recipe.name||'';
+  document.getElementById('f-desc').value=(recipe.description||'').replace(/<[^>]+>/g,'').substring(0,200);
+  document.getElementById('f-url').value=url;
+  document.getElementById('f-cal').value=calories;
+
+  const prepRaw=recipe.prepTime||'';
+  const cookRaw=recipe.cookTime||'';
+  const pm=prepRaw.match(/PT(?:(\d+)H)?(?:(\d+)M)?/);
+  const cm=cookRaw.match(/PT(?:(\d+)H)?(?:(\d+)M)?/);
+  document.getElementById('f-prep').value=pm?((parseInt(pm[1]||0)*60)+(parseInt(pm[2]||0))).toString():'';
+  document.getElementById('f-cook').value=cm?((parseInt(cm[1]||0)*60)+(parseInt(cm[2]||0))).toString():'';
+
+  const sv=(recipe.recipeYield||'').toString().match(/\d+/);
+  document.getElementById('f-serv').value=sv?sv[0]:'';
+
+  // Ingrédients
+  document.getElementById('ing-rows').innerHTML='';
+  ingredients.forEach(i=>addIngRow(i.qty,i.unit,i.name));
+  if(!ingredients.length) addIngRow();
+
+  // Étapes
+  document.getElementById('step-rows').innerHTML='';
+  instructions.forEach(s=>addStepRow(s.text,s.img));
+  if(!instructions.length) addStepRow();
+
+  // Image
+  _formImg=imgUrl;
+  const zone=document.getElementById('img-pick-zone');
+  const oldI=zone.querySelector('img'); if(oldI) oldI.remove();
+  if(imgUrl){
+    const im=document.createElement('img'); im.src=imgUrl; im.style.cssText='width:100%;height:100%;object-fit:cover;position:absolute;inset:0'; zone.appendChild(im);
+    zone.querySelector('.ph').style.display='none'; zone.querySelector('.ph-txt').style.display='none';
+  } else {
+    zone.querySelector('.ph').style.display=''; zone.querySelector('.ph-txt').style.display='';
+  }
+
+  setImportStatus('✓ Recette pré-remplie — vérifie et enregistre !','is-ok');
+  const fc=document.querySelector('.form-card'); if(fc) fc.scrollIntoView({behavior:'smooth',block:'start'});
+}
+
+function setImportStatus(msg,cls){
+  const el=document.getElementById('import-status');
+  el.textContent=msg; el.className='import-status '+cls;
+}
+
+// ── PLANNING ──
+function planLoadLocal(){ try{ return JSON.parse(localStorage.getItem(userKey('mealplan'))||'{}'); }catch(e){ return {}; } }
+function planLoad(){ return planLoadLocal(); }
+function planSave(d){ localStorage.setItem(userKey('mealplan'),JSON.stringify(d)); scheduleSync(); }
+function getWeekDates(offset){
+  const now=new Date(), day=now.getDay(), diff=(day===0?-6:1-day);
+  const mon=new Date(now); mon.setDate(now.getDate()+diff+offset*7); mon.setHours(0,0,0,0);
+  const dates=[];
+  for(let i=0;i<7;i++){ const d=new Date(mon); d.setDate(mon.getDate()+i); dates.push(d); }
+  return dates;
+}
+function dateKey(d){ return d.getFullYear()+'-'+String(d.getMonth()+1).padStart(2,'0')+'-'+String(d.getDate()).padStart(2,'0'); }
+const DAY_NAMES=['Lun','Mar','Mer','Jeu','Ven','Sam','Dim'];
+const MONTH_NAMES=['janv.','févr.','mars','avr.','mai','juin','juil.','août','sept.','oct.','nov.','déc.'];
+
+function planShift(d){ _planWeekOffset+=d; renderPlanning(); }
+
+function renderPlanning(){
+  const dates=getWeekDates(_planWeekOffset), plan=planLoad(), today=dateKey(new Date());
+  const f=dates[0], l=dates[6];
+  document.getElementById('plan-week-label').textContent=f.getDate()+' '+MONTH_NAMES[f.getMonth()]+' – '+l.getDate()+' '+MONTH_NAMES[l.getMonth()]+' '+l.getFullYear();
+  const grid=document.getElementById('plan-grid'); grid.innerHTML='';
+  dates.forEach(function(date,i){
+    const key=dateKey(date), slots=plan[key]||[];
+    const col=document.createElement('div'); col.className='plan-day';
+    const head=document.createElement('div'); head.className='plan-day-head';
+    const dn=document.createElement('div'); dn.className='plan-day-name'; dn.textContent=DAY_NAMES[i];
+    const dd=document.createElement('div'); dd.className='plan-day-num'+(key===today?' today':''); dd.textContent=date.getDate();
+    head.appendChild(dn); head.appendChild(dd); col.appendChild(head);
+    const body=document.createElement('div'); body.className='plan-day-body';
+    slots.forEach(function(slot,si){
+      const pill=document.createElement('div'); pill.className='plan-slot'; pill.title=slot.name;
+      const ns=document.createElement('span'); ns.className='plan-slot-name'; ns.textContent=slot.name;
+      const db=document.createElement('button'); db.className='plan-slot-del'; db.textContent='✕'; db.title='Retirer';
+      db.addEventListener('click',function(e){ e.stopPropagation(); removePlanSlot(key,si); });
+      pill.appendChild(ns);
+      if(slot.calories){ const cs=document.createElement('span'); cs.className='plan-slot-cal'; cs.textContent=slot.calories+' kcal'; pill.appendChild(cs); }
+      pill.appendChild(db);
+      pill.addEventListener('click',function(){
+        const recipe=_recipeCache.find(function(r){ return r.id===slot.recipeId||String(r.id)===String(slot.recipeId); });
+        if(recipe) openModal(recipe);
+      });
+      body.appendChild(pill);
+    });
+    const ab=document.createElement('button'); ab.className='plan-add-btn'; ab.textContent='+ Ajouter';
+    ab.addEventListener('click',function(){ openPlanModal(key,date); }); body.appendChild(ab);
+    col.appendChild(body); grid.appendChild(col);
+  });
+}
+
+function removePlanSlot(k,si){
+  const plan=planLoad(); if(!plan[k]) return;
+  plan[k].splice(si,1); if(!plan[k].length) delete plan[k];
+  planSave(plan); renderPlanning();
+}
+
+function openPlanModal(dk,date){
+  _planTargetDate=dk;
+  const d=date||new Date(dk);
+  document.getElementById('pm-title').textContent='Ajouter une recette';
+  document.getElementById('pm-sub').textContent=d.getDate()+' '+MONTH_NAMES[d.getMonth()]+' '+d.getFullYear();
+  document.getElementById('pm-search').value='';
+  renderPmList('');
+  document.getElementById('plan-modal').classList.add('on');
+}
+
+function openPlanModalForRecipe(recipe){
+  window._planPendingRecipe=recipe;
+  _planTargetDate=null;
+  document.getElementById('pm-title').textContent='Choisir un jour pour :';
+  document.getElementById('pm-sub').textContent=recipe.name;
+  document.getElementById('pm-search').value='';
+  renderDateList();
+  document.getElementById('plan-modal').classList.add('on');
+}
+
+function renderDateList(){
+  const list=document.getElementById('pm-list'); list.innerHTML='';
+  const today=new Date(); today.setHours(0,0,0,0);
+  for(let i=0;i<14;i++){
+    const d=new Date(today); d.setDate(today.getDate()+i); const key=dateKey(d);
+    const plan=planLoad(), slots=plan[key]||[];
+    const item=document.createElement('div'); item.className='pm-item';
+    const left=document.createElement('div'); left.style.cssText='display:flex;flex-direction:column;flex:1;gap:.1rem';
+    const dl=document.createElement('span'); dl.style.cssText='font-size:.84rem;color:var(--ink);font-weight:'+(i===0?'500':'400');
+    dl.textContent=i===0?'Aujourd\'hui':i===1?'Demain':DAY_NAMES[(d.getDay()+6)%7]+' '+d.getDate()+' '+MONTH_NAMES[d.getMonth()];
+    const ex=document.createElement('span'); ex.style.cssText='font-size:.72rem;color:var(--ink-muted)';
+    ex.textContent=slots.length?slots.map(function(s){ return s.name; }).join(', '):'—';
+    left.appendChild(dl); left.appendChild(ex); item.appendChild(left);
+    item.addEventListener('click',function(){
+      const r=window._planPendingRecipe; if(!r) return;
+      addRecipeToPlan(r,key); closePlanModal();
+      const tab=document.querySelectorAll('.tab')[2]; go('planning',tab);
+    });
+    list.appendChild(item);
+  }
+}
+
+function renderPmList(q){
+  const list=document.getElementById('pm-list'); list.innerHTML='';
+  const recipes=_recipeCache.filter(function(r){ return !q||r.name.toLowerCase().includes(q.toLowerCase()); });
+  if(!recipes.length){
+    const p=document.createElement('p'); p.style.cssText='text-align:center;color:var(--ink-muted);padding:1.5rem 0;font-size:.83rem'; p.textContent='Aucune recette'; list.appendChild(p); return;
+  }
+  recipes.forEach(function(r){
+    const item=document.createElement('div'); item.className='pm-item';
+    if(r.image_url){ const img=document.createElement('img'); img.className='pm-thumb'; img.src=r.image_url; img.onerror=function(){ this.replaceWith(pmph()); }; item.appendChild(img); }
+    else item.appendChild(pmph());
+    const info=document.createElement('div'); info.style.cssText='display:flex;flex-direction:column;gap:.1rem;flex:1;min-width:0';
+    const nm=document.createElement('span'); nm.className='pm-name'; nm.textContent=r.name; info.appendChild(nm);
+    if(r.calories){ const c=document.createElement('span'); c.className='pm-cal'; c.textContent=r.calories+' kcal'; info.appendChild(c); }
+    item.appendChild(info);
+    item.addEventListener('click',function(){ addRecipeToPlan(r,_planTargetDate); closePlanModal(); renderPlanning(); });
+    list.appendChild(item);
+  });
+}
+
+function pmph(){ const p=document.createElement('div'); p.className='pm-thumb-ph'; p.textContent='🍽'; return p; }
+
+function filterPlanList(){ const q=document.getElementById('pm-search').value; if(_planTargetDate) renderPmList(q); else renderDateList(); }
+
+function addRecipeToPlan(recipe,dk){
+  const plan=planLoad(); if(!plan[dk]) plan[dk]=[];
+  plan[dk].push({recipeId:recipe.id,name:recipe.name,calories:recipe.calories||''}); planSave(plan);
+}
+
+// ── GÉNÉRATION IA ──
+let _genPlan = null; // résultat proposé par Claude
+
+function openGenModal(){
+  // Reset UI
+  document.getElementById('gen-status').style.display='none';
+  document.getElementById('gen-preview').style.display='none';
+  document.getElementById('gen-footer').style.display='flex';
+  document.getElementById('btn-gen-go').disabled=false;
+  document.getElementById('btn-gen-go').textContent='✨ Générer';
+  document.getElementById('gen-note').value='';
+  _genPlan=null;
+  // Reset chips "repas par jour" → 1 sélectionné
+  document.querySelectorAll('#gen-meals .gen-chip').forEach(c=>c.classList.remove('on'));
+  document.querySelector('#gen-meals [data-val="1"]').classList.add('on');
+  document.getElementById('gen-modal').classList.add('on');
+}
+
+function closeGenModal(){ document.getElementById('gen-modal').classList.remove('on'); }
+
+// Toggle chips (multi-select sauf repas/jour = single)
+document.addEventListener('click',function(e){
+  const chip=e.target.closest('.gen-chip');
+  if(!chip) return;
+  const group=chip.closest('#gen-meals');
+  if(group){ // single select
+    group.querySelectorAll('.gen-chip').forEach(c=>c.classList.remove('on'));
+    chip.classList.add('on');
+  } else {
+    chip.classList.toggle('on');
+  }
+});
+
+function getGenSelections(){
+  const types=[...document.querySelectorAll('#gen-types .gen-chip.on')].map(c=>c.dataset.val);
+  const excl=[...document.querySelectorAll('#gen-exclude .gen-chip.on')].map(c=>c.dataset.val);
+  const mealsEl=document.querySelector('#gen-meals .gen-chip.on');
+  const meals=mealsEl?parseInt(mealsEl.dataset.val):1;
+  const note=document.getElementById('gen-note').value.trim();
+  return { types, excl, meals, note };
+}
+
+async function doGenerate(){
+  const recipes=_recipeCache;
+  if(!recipes.length){ alert('Ajoute des recettes avant de g\u00e9n\u00e9rer un planning !'); return; }
+
+  const {types,excl,meals,note}=getGenSelections();
+  const dates=getWeekDates(_planWeekOffset);
+  const dayLabels=dates.map(function(d,i){ return DAY_NAMES[i]+' '+d.getDate()+' '+MONTH_NAMES[d.getMonth()]; });
+
+  document.getElementById('gen-status').style.display='block';
+  document.getElementById('gen-status').style.color='var(--ink-muted)';
+  document.getElementById('gen-status').textContent='\u23f3 Claude choisit tes recettes\u2026';
+  document.getElementById('gen-preview').style.display='none';
+  document.getElementById('gen-footer').style.display='none';
+  document.getElementById('btn-gen-go').disabled=true;
+
+  const recipesSummary=recipes.map(function(r){
+    return {
+      id:r.id, name:r.name,
+      tags:[r.category,r.cuisine].filter(Boolean),
+      ingredients:(r.ingredients||[]).slice(0,6).map(function(i){
+        return typeof i==='string'?i:[i.qty,i.unit,i.name].filter(Boolean).join(' ');
+      }),
+      calories:r.calories||null
+    };
+  });
+
+  const prefParts=[];
+  if(types.length) prefParts.push('Pr\u00e9f\u00e9rences : '+types.join(', ')+'.');
+  if(excl.length) prefParts.push('\u00c0 exclure : '+excl.join(', ')+'.');
+  prefParts.push('Repas par jour : '+meals+'.');
+  if(note) prefParts.push('Note : '+note+'.');
+
+  const promptText=[
+    'Tu es un assistant culinaire. G\u00e9n\u00e8re un planning repas pour la semaine du '+dayLabels[0]+' au '+dayLabels[6]+'.',
+    '',
+    prefParts.join(' '),
+    '',
+    'Recettes disponibles (JSON) :',
+    JSON.stringify(recipesSummary,null,1),
+    '',
+    'G\u00e9n\u00e8re un planning pour 7 jours. Pour chaque jour, choisis '+meals+' recette(s). Respecte les pr\u00e9f\u00e9rences et exclusions. Varie les repas au maximum.',
+    '',
+    'R\u00e9ponds UNIQUEMENT en JSON valide, sans markdown. Format :',
+    '{"days":[{"label":"'+dayLabels[0]+'","recipes":[{"id":123,"name":"Nom"}]},...]}'
+  ].join('\n');
+
+  try {
+    const res=await fetch('https://api.anthropic.com/v1/messages',{
+      method:'POST',
+      headers:{'Content-Type':'application/json'},
+      body:JSON.stringify({
+        model:'claude-sonnet-4-20250514',
+        max_tokens:1200,
+        messages:[{role:'user',content:promptText}]
+      })
+    });
+    const data=await res.json();
+    if(data.error){ throw new Error(data.error.message||'Erreur API'); }
+    let raw=data.content.filter(function(b){ return b.type==='text'; }).map(function(b){ return b.text; }).join('');
+    raw=raw.replace(/```json|```/g,'').trim();
+    const parsed=JSON.parse(raw);
+    _genPlan={ dates:dates, parsed:parsed };
+    renderGenPreview(parsed, dates);
+  } catch(err){
+    document.getElementById('gen-status').textContent='\u274c Erreur : '+err.message+'. R\u00e9essaie.';
+    document.getElementById('gen-status').style.color='var(--red)';
+    document.getElementById('gen-footer').style.display='flex';
+  }
+  document.getElementById('btn-gen-go').disabled=false;
+  document.getElementById('btn-gen-go').textContent='\u2728 G\u00e9n\u00e9rer';
+}
+
+function renderGenPreview(parsed, dates){
+  document.getElementById('gen-status').style.display='none';
+  const container=document.getElementById('gen-preview-days');
+  container.innerHTML='';
+  (parsed.days||[]).forEach(function(day,i){
+    const row=document.createElement('div'); row.className='gen-day-row';
+    const lbl=document.createElement('span'); lbl.className='gen-day-label';
+    lbl.textContent=DAY_NAMES[i]||('J'+i);
+    row.appendChild(lbl);
+    if(day.recipes&&day.recipes.length){
+      const nm=document.createElement('span'); nm.className='gen-day-recipe';
+      nm.textContent=day.recipes.map(function(r){ return r.name; }).join(' \u00b7 ');
+      row.appendChild(nm);
+    } else {
+      const em=document.createElement('span'); em.className='gen-day-empty';
+      em.textContent='Aucune recette'; row.appendChild(em);
+    }
+    container.appendChild(row);
+  });
+  document.getElementById('gen-preview').style.display='block';
+  document.getElementById('gen-footer').style.display='none';
+}
+
+function applyGenPlan(){
+  if(!_genPlan) return;
+  const dates=_genPlan.dates, parsed=_genPlan.parsed;
+  const plan=planLoad();
+  (parsed.days||[]).forEach(function(day,i){
+    if(!day.recipes||!day.recipes.length) return;
+    const dk=dateKey(dates[i]);
+    if(!plan[dk]) plan[dk]=[];
+    day.recipes.forEach(function(r){
+      const full=_recipeCache.find(function(rc){ return rc.id===r.id||String(rc.id)===String(r.id); });
+      if(full && !plan[dk].find(function(s){ return String(s.recipeId)===String(full.id); })){
+        plan[dk].push({recipeId:full.id,name:full.name,calories:full.calories||''});
+      }
+    });
+  });
+  planSave(plan);
+  closeGenModal();
+  renderPlanning();
+}
+
+function closePlanModal(){
+  document.getElementById('plan-modal').classList.remove('on');
+  _planTargetDate=null; window._planPendingRecipe=null;
+}
+document.getElementById('plan-modal').addEventListener('click',function(e){ if(e.target===e.currentTarget) closePlanModal(); });
+
+// ── PANIER ──
+function cartLoadLocal(){ try{ return JSON.parse(localStorage.getItem(userKey('cart2'))||'[]'); }catch(e){ return []; } }
+function cartLoad(){ return cartLoadLocal(); }
+function cartSave(c){ localStorage.setItem(userKey('cart2'),JSON.stringify(c)); scheduleSync(); }
+
+function renderCart(){
+  const cart=cartLoad(), el=document.getElementById('shop-list'); el.innerHTML='';
+  if(!cart.length){
+    const p=document.createElement('p'); p.style.cssText='text-align:center;color:var(--ink-muted);padding:2rem 0;font-size:.85rem'; p.textContent='Aucun ingrédient.'; el.appendChild(p); return;
+  }
+  cart.forEach(function(item,i){
+    const div=document.createElement('div'); div.className='s-item'+(item.done?' done':'');
+    const iw=document.createElement('span'); iw.style.cssText='flex-shrink:0;display:flex;align-items:center'; iw.innerHTML=ingIcon(item.name||''); div.appendChild(iw);
+    const cb=document.createElement('input'); cb.type='checkbox'; cb.checked=!!item.done; cb.addEventListener('change',function(){ tickItem(i); });
+    const lbl=document.createElement('span'); lbl.className='ing-label'; lbl.textContent=item.name; lbl.addEventListener('click',function(){ tickItem(i); });
+    const qw=document.createElement('div'); qw.className='qty-wrap';
+    const qi=document.createElement('input'); qi.className='qty-input'; qi.type='text'; qi.value=item.qty||''; qi.placeholder='qté'; qi.addEventListener('change',function(){ updateQty(i,this.value); });
+    const qu=document.createElement('span'); qu.className='qty-unit'; qu.textContent=item.unit||'';
+    qw.appendChild(qi); qw.appendChild(qu);
+    const bd=document.createElement('button'); bd.className='s-item-del'; bd.textContent='✕'; bd.addEventListener('click',function(){ removeItem(i); });
+    div.appendChild(cb); div.appendChild(lbl); div.appendChild(qw); div.appendChild(bd); el.appendChild(div);
+  });
+}
+
+function tickItem(i){ const c=cartLoad(); c[i].done=!c[i].done; cartSave(c); renderCart(); }
+function updateQty(i,val){ const c=cartLoad(); c[i].qty=val.trim(); cartSave(c); }
+function removeItem(i){ const c=cartLoad(); c.splice(i,1); cartSave(c); renderCart(); }
+function addManual(){
+  const inp=document.getElementById('manual-ing'), val=inp.value.trim(); if(!val) return;
+  const c=cartLoad(); c.push({name:val,qty:'',unit:'',done:false}); cartSave(c); inp.value=''; renderCart();
+}
+function doWipe(){ if(!confirm('Vider la liste ?')) return; cartSave([]); renderCart(); }
+function doPrint(){
+  const cart=cartLoad(), w=window.open('','_blank');
+  w.document.write('<html><head><title>Courses</title><style>body{font-family:sans-serif;padding:2rem}h1{margin-bottom:1rem}li{margin:.4rem 0}.done{text-decoration:line-through;color:#aaa}</style></head><body><h1>Liste de courses</h1><ul>'+
+    cart.map(function(i){ return '<li class="'+(i.done?'done':'')+'">'+ [i.qty,i.unit,i.name].filter(Boolean).join(' ')+'</li>'; }).join('')+'</ul></body></html>'); w.print();
+}
+
+// ── IMAGE ──
+function resizeImage(file,maxW){
+  return new Promise(function(resolve){
+    const reader=new FileReader();
+    reader.onload=function(e){
+      const img=new Image();
+      img.onload=function(){
+        const ratio=Math.min(1,maxW/img.width), w=Math.round(img.width*ratio), h=Math.round(img.height*ratio);
+        const canvas=document.createElement('canvas'); canvas.width=w; canvas.height=h;
+        canvas.getContext('2d').drawImage(img,0,0,w,h); resolve(canvas.toDataURL('image/jpeg',.82));
+      }; img.src=e.target.result;
+    }; reader.readAsDataURL(file);
+  });
+}
+</script>
+</body>
+</html>
